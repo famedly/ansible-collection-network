@@ -1,0 +1,10 @@
+stages:
+  - lint
+
+ansible-lint:
+  stage: lint
+  image: pipelinecomponents/ansible-lint:latest
+  variables:
+    ANSIBLE_CONFIG: "/builds/redbux/ansible/ansible.cfg"
+  script:
+    - ansible-lint .
