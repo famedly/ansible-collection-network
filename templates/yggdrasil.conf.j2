@@ -58,7 +58,7 @@
   {% for peer in yggdrasil_ansible_peers %}
   {% if hostvars[peer] is defined %}
   {% if hostvars[peer].yggdrasil_encryption_public_key is defined %}
-  "{{ hostvars[peer].yggdrasil_encryption_public_key }}"
+  "{{ hostvars[peer].yggdrasil_encryption_public_key }}",
   {% endif %}
   {% endif %}
   {% endfor %}

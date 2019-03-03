@@ -7,12 +7,24 @@
     state: present
     keyserver: pool.sks-keyservers.net
     id: 569130E8CA20FBC4CB3FDE555898470A764B32C9
+  register: task_result
+  until: task_result is success
+  retries: 3
+  delay: 2
 
 - name: add apt repository
   apt_repository:
     repo: deb http://neilalexander.s3.eu-west-2.amazonaws.com/deb/ debian yggdrasil
     state: present
+  register: task_result
+  until: task_result is success
+  retries: 3
+  delay: 2
 
 - name: install yggdrasil
   apt:
     name: yggdrasil
+  register: task_result
+  until: task_result is success
+  retries: 3
+  delay: 2

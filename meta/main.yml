@@ -7,6 +7,29 @@ galaxy_info:
 
   min_ansible_version: 2.5
 
+  platforms:
+    - name: Void Linux
+      versions:
+        - any
+    - name: Debian
+      versions:
+        - jessie
+        - stretch
+        - buster
+        - sid
+    - name: Fedora
+      versions:
+        - 28
+        - 29
+    - name: Ubuntu
+      versions:
+        - xenial
+        - bionic
+        - cosmic
+    - name: ArchLinux
+      versions:
+        - any
+
   galaxy_tags: []
 
 dependencies: []
