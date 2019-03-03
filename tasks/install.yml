@@ -3,7 +3,7 @@
   when: ansible_lsb.id == "VoidLinux"
 
 - import_tasks: install/fedora.yml
-  when: ansible_lsb.id == "Fedora" or ansible_lsb.id == "CentOS"
+  when: ansible_lsb.id == "Fedora"
 
 - import_tasks: install/debian.yml
   when: ansible_lsb.id == "Debian" or ansible_lsb.id == "Ubuntu"
