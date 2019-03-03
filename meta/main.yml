@@ -17,7 +17,7 @@ galaxy_info:
         - stretch
         - buster
         - sid
-    - name: Fedora
+    - name: Fedora    # Depends on redhat-lsb-core
       versions:
         - 28
         - 29
@@ -26,7 +26,7 @@ galaxy_info:
         - xenial
         - bionic
         - cosmic
-    - name: ArchLinux
+    - name: ArchLinux # Depends on python and lsb-release and some aur tool
       versions:
         - any
 
