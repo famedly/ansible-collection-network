@@ -1,0 +1,47 @@
+---
+# tasks file for traefik
+---
+- name: Create user
+  user:
+    name: traefik
+    groups: docker
+    append: yes
+  register: userretval
+- name: Create directory
+  file:
+    path: /opt/traefik
+    owner: traefik
+    group: traefik
+    state: directory
+    mode: 0700
+- name: Create acme.json
+  file:
+    path: /opt/traefik/acme.json
+    owner: traefik
+    group: traefik
+    state: touch
+    mode: 0600
+- name: Template config file
+  template:
+    src: traefik.toml.j2
+    dest: /opt/traefik/config.toml
+    owner: traefik
+    group: traefik
+- name: Deploy traefik-container
+  docker_container:
+    name: traefik
+    image: docker.io/traefik
+    restart_policy: unless-stopped
+#       user: "{{ userretval.uid }}:{{ userretval.group }}"
+#       TODO: Make running this as non-root work.
+    pull: true
+    recreate: true
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/opt/traefik/config.toml:/traefik.toml"
+      - "/opt/traefik/acme.json:/acme.json"
+    ports:
+      - "8080:8080"
+      - "80:80"
+      - "443:443"
+

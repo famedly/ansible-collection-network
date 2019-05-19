@@ -1,0 +1,38 @@
+debug = false
+
+logLevel = "ERROR"
+defaultEntryPoints = ["https","http"]
+
+[entryPoints]
+  [entryPoints.http]
+  address = ":80"
+    [entryPoints.http.redirect]
+    entryPoint = "https"
+
+  [entryPoints.https]
+  address = ":443"
+  [entryPoints.https.tls]
+
+  [entryPoints.traefik]
+  address = ":8080"
+
+[retry]
+
+[api]
+entryPoint = "traefik"
+dashboard = true
+
+[docker]
+endpoint = "unix:///var/run/docker.sock"
+domain = "{{ traefik_docker_domain }}"
+watch = true
+exposedByDefault = false
+
+[acme]
+email = "{{ traefik_acme_email }}"
+storage = "acme.json"
+entryPoint = "https"
+onHostRule = true
+[acme.httpChallenge]
+entryPoint = "http"
+
