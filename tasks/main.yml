@@ -36,6 +36,7 @@
 #       TODO: Make running this as non-root work.
     pull: true
     recreate: true
+    env: "{{ traefik_env }}"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "/opt/traefik/config.toml:/traefik.toml"
