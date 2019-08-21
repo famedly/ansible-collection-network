@@ -35,6 +35,19 @@ email = "{{ traefik_acme_email }}"
 storage = "acme.json"
 entryPoint = "https"
 onHostRule = true
+{% if traefik_acme_challenge == "http" %}
 [acme.httpChallenge]
 entryPoint = "http"
-
+{% elif traefik_acme_challege == "dns" %}
+[acme.dnsChallenge]
+provider = "{{ traefik_acme_dns_provider }}"
+delayBeforeCheck = 0
+resolvers = ["1.1.1.1:53", "8.8.8.8:53"]
+{% endif %}
+{% if traefik_acme_domains is defined %}
+{% for domain in traefik_acme_domains %}
+[[acme.domains]]
+main = "{{ domain.main }}"
+sans = ["{{ domain.sans | join('", "') }}"]
+{% endfor %}
+{% endif %}
