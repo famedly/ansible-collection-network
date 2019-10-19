@@ -1,0 +1,24 @@
+{% if traefik_enable_api %}
+http:
+  routers:
+    api:
+      rule: Host(`{{ traefik_api_host }}`)
+      entrypoints:
+        - web-secure
+      service: api@internal
+      {% if traefik_enable_api_authentication %}
+      middlewares:
+        - apiAuth
+      {% endif %}
+      tls:
+        certresolver: letsencrypt
+  {% if traefik_enable_api_authentication %}
+  middlewares:
+    apiAuth:
+      basicAuth:
+        users:
+        {% for basic_auth_user in traefik_api_users %}
+          - '{{ basic_auth_user }}'
+        {% endfor %}
+  {% endif %}
+{% endif %}

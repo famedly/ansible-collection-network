@@ -1,19 +1,28 @@
 ---
 # tasks file for traefik
----
 - name: Create user
   user:
     name: traefik
     groups: docker
     append: yes
   register: userretval
-- name: Create directory
+
+- name: Create traefik base directory
   file:
     path: /opt/traefik
     owner: traefik
     group: traefik
     state: directory
-    mode: 0700
+    mode: 0755
+
+- name: Create traefik config directory
+  file:
+    path: /opt/traefik/config.d
+    owner: traefik
+    group: traefik
+    state: directory
+    mode: 0755
+
 - name: Create acme.json
   file:
     path: /opt/traefik/acme.json
@@ -21,28 +30,39 @@
     group: traefik
     state: touch
     mode: 0600
+
 - name: Template config file
   template:
-    src: traefik.toml.j2
-    dest: /opt/traefik/config.toml
+    src: traefik.yml.j2
+    dest: /opt/traefik/config.yml
     owner: traefik
     group: traefik
+  notify: restart traefik
+
+- name: template dynamic configs
+  template:
+    src: "{{ item }}.yml.j2"
+    dest: "/opt/traefik/config.d/{{ item }}.yml"
+    owner: traefik
+    group: traefik
+  loop:
+    - api-router
+    - https-redirect
+
 - name: Deploy traefik-container
   docker_container:
     name: traefik
-    image: docker.io/traefik
+    image: docker.io/traefik:v2.0
     restart_policy: unless-stopped
 #       user: "{{ userretval.uid }}:{{ userretval.group }}"
 #       TODO: Make running this as non-root work.
     pull: true
-    recreate: true
     env: "{{ traefik_env }}"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
-      - "/opt/traefik/config.toml:/traefik.toml"
+      - "/opt/traefik/config.yml:/traefik.yml"
+      - "/opt/traefik/config.d/:/opt/traefik/config.d/"
       - "/opt/traefik/acme.json:/acme.json"
     ports:
-      - "8080:8080"
       - "80:80"
       - "443:443"
-

@@ -1,0 +1,6 @@
+traefik_enable_docker: true
+traefik_enable_api: true
+traefik_enable_api_dashboard: true
+traefik_enable_api_debug: false
+traefik_enable_api_authentication: false
+traefik_api_users: []

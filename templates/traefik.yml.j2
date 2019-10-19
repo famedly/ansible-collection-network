@@ -1,0 +1,27 @@
+entryPoints:
+  web:
+    address: ":80"
+  web-secure:
+    address: ":443"
+
+{% if traefik_enable_api %}
+api:
+  dashboard: {{ traefik_enable_api_dashboard }}
+  debug: {{ traefik_enable_api_debug }}
+{% endif %}
+
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      email: {{ traefik_acme_email }}
+      httpChallenge:
+        entryPoint: web
+
+providers:
+  {% if traefik_enable_docker %}
+  docker:
+    exposedByDefault: false
+  {% endif %}
+  file:
+    directory: /opt/traefik/config.d
+    watch: true
