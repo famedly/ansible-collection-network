@@ -57,7 +57,7 @@
 #       user: "{{ userretval.uid }}:{{ userretval.group }}"
 #       TODO: Make running this as non-root work.
     pull: true
-    env: "{{ traefik_env }}"
+    env: "{{ traefik_container_env }}"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "/opt/traefik/config.yml:/traefik.yml"

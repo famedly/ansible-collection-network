@@ -6,19 +6,19 @@ http:
       entrypoints:
         - web-secure
       service: api@internal
-      {% if traefik_enable_api_authentication %}
+{% if traefik_enable_api_authentication %}
       middlewares:
         - apiAuth
-      {% endif %}
+{% endif %}
       tls:
         certresolver: letsencrypt
-  {% if traefik_enable_api_authentication %}
+{% if traefik_enable_api_authentication %}
   middlewares:
     apiAuth:
       basicAuth:
         users:
-        {% for basic_auth_user in traefik_api_users %}
+{% for basic_auth_user in traefik_api_users %}
           - '{{ basic_auth_user }}'
-        {% endfor %}
-  {% endif %}
+{% endfor %}
+{% endif %}
 {% endif %}
