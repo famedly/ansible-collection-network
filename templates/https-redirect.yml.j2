@@ -1,18 +1,18 @@
 http:
   routers:
-    http-redirect:
-      rule: "HostRegexp(`.*`)"
-      # If we can't find what we're looking for on http,
-      # redirect to https and try there. Priority set to one,
-      # so that all regular length calculated priorities are higher.
-      priority: 1
+    https-redirect:
+      rule: "HostRegexp(`{any:.*}`)"
       entryPoints:
         - web
       middlewares:
         - redirect
-      # We need a service here, so we use the api for that
-      # TODO: Does this break when we disable the API?
-      service: api@internal
+      service: dummy
+
+  services:
+    dummy:
+      loadBalancer:
+        servers:
+          - url: ""
 
   middlewares:
     redirect:
