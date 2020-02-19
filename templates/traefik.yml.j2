@@ -15,8 +15,15 @@ certificatesResolvers:
   letsencrypt:
     acme:
       email: {{ traefik_acme_email }}
+      {% if traefik_acme_challenge == 'HTTP-01'%}
       httpChallenge:
         entryPoint: web
+      {% elif traefik_acme_challenge == 'DNS-01' %}
+      dnsChallenge:
+        provider: {{ traefik_acme_dns_provider }}
+      {% elif traefik_acme_challenge == 'TLS-ALPN-01' %}
+      tlsChallenge: {}
+      {% endif %}
 
 providers:
   {% if traefik_enable_docker %}

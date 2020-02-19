@@ -5,3 +5,4 @@ traefik_enable_api_debug: false
 traefik_enable_api_authentication: false
 traefik_api_users: []
 traefik_container_env: {}
+traefik_acme_challenge: "HTTP-01"
