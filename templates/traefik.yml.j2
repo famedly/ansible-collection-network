@@ -11,6 +11,7 @@ api:
   debug: {{ traefik_enable_api_debug }}
 {% endif %}
 
+{% if traefik_acme_enabled %}
 certificatesResolvers:
   letsencrypt:
     acme:
@@ -24,6 +25,7 @@ certificatesResolvers:
       {% elif traefik_acme_challenge == 'TLS-ALPN-01' %}
       tlsChallenge: {}
       {% endif %}
+{% endif %}
 
 providers:
   {% if traefik_enable_docker %}
