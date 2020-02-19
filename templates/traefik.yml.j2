@@ -1,3 +1,4 @@
+#jinja2: lstrip_blocks: "True", trim_blocks: "True"
 entryPoints:
   web:
     address: ":80"
@@ -18,10 +19,10 @@ certificatesResolvers:
         entryPoint: web
 
 providers:
-{% if traefik_enable_docker %}
+  {% if traefik_enable_docker %}
   docker:
     exposedByDefault: false
-{% endif %}
+  {% endif %}
   file:
     directory: /opt/traefik/config.d
     watch: true
