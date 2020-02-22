@@ -13,6 +13,16 @@ http:
       {% endif %}
       tls:
         certResolver: letsencrypt
+        {% if traefik_api_tls_domains is defined %}
+        domains:
+          {% for domain in traefik_api_tls_domains %}
+          - main: "{{ domain.main }}"
+            sans:
+	    {% for san in domain.sans %}
+              - "{{ san }}"
+            {% endfor %}
+          {% endfor %}
+        {% endif %}
   {% if traefik_enable_api_authentication %}
   middlewares:
     apiAuth:
