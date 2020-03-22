@@ -1,9 +1,8 @@
 #jinja2: lstrip_blocks: "True", trim_blocks: "True"
 entryPoints:
-  web:
-    address: ":80"
-  web-secure:
-    address: ":443"
+{% for entrypoint in traefik_entrypoints %}
+  {{ entrypoint.name }}: {{ entrypoint.config | tojson }}
+{% endfor %}
 
 {% if traefik_enable_api %}
 api:

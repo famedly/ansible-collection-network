@@ -7,3 +7,10 @@ traefik_api_users: []
 traefik_container_env: {}
 traefik_acme_challenge: "HTTP-01"
 traefik_acme_enabled: true
+traefik_entrypoints:
+  - name: web
+    config:
+      address: ":80"
+  - name: web-secure
+    config:
+      address: ":443"
