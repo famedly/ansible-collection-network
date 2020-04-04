@@ -53,6 +53,7 @@
   docker_container:
     name: traefik
     image: docker.io/traefik:v2.0
+    network_mode: host
     restart_policy: unless-stopped
 #       user: "{{ userretval.uid }}:{{ userretval.group }}"
 #       TODO: Make running this as non-root work.
@@ -63,6 +64,4 @@
       - "/opt/traefik/config.yml:/traefik.yml"
       - "/opt/traefik/config.d/:/opt/traefik/config.d/"
       - "/opt/traefik/acme.json:/acme.json"
-    ports:
-      - "80:80"
-      - "443:443"
+
