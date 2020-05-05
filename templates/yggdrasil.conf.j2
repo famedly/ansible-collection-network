@@ -117,27 +117,53 @@
   {
     # Enable or disable the session firewall. If disabled, network traffic
     # from any node will be allowed. If enabled, the below rules apply.
-    Enable: false
+    Enable: {{ yggdrasil_sfw_enable | tojson }}
 
     # Allow network traffic from directly connected peers.
-    AllowFromDirect: true
+    AllowFromDirect: {{ yggdrasil_sfw_allow_direct | tojson }}
 
     # Allow network traffic from remote nodes on the network that you are
     # not directly peered with.
-    AllowFromRemote: true
+    AllowFromRemote: {{ yggdrasil_sfw_allow_remote | tojson }}
 
     # Allow outbound network traffic regardless of AllowFromDirect or
     # AllowFromRemote. This does allow a remote node to send unsolicited
     # traffic back to you for the length of the session.
-    AlwaysAllowOutbound: true
+    AlwaysAllowOutbound: {{ yggdrasil_sfw_allow_outbound | tojson }}
 
     # List of public keys from which network traffic is always accepted,
     # regardless of AllowFromDirect or AllowFromRemote.
-    WhitelistEncryptionPublicKeys: []
+    WhitelistEncryptionPublicKeys: [
+      {% for peer in yggdrasil_extra_peers %}
+        {% if peer.public_key is defined and peer.sfw is defined and peer.sfw == 'whitelisted' %}
+      "{{ peer.public_key }}",
+        {% endif %}
+      {% endfor %}
+      {% for peer in yggdrasil_sfw_ansible_whitelist %}
+        {% if hostvars[peer] is defined %}
+          {% if hostvars[peer].yggdrasil_encryption_public_key is defined %}
+      "{{ hostvars[peer].yggdrasil_encryption_public_key }}",
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+    ]
 
     # List of public keys from which network traffic is always rejected,
     # regardless of the whitelist, AllowFromDirect or AllowFromRemote.
-    BlacklistEncryptionPublicKeys: []
+    BlacklistEncryptionPublicKeys: [
+      {% for peer in yggdrasil_extra_peers %}
+        {% if peer.public_key is defined and peer.sfw is defined and peer.sfw == 'blacklisted' %}
+      "{{ peer.public_key }}",
+        {% endif %}
+      {% endfor %}
+      {% for peer in yggdrasil_sfw_ansible_blacklist %}
+        {% if hostvars[peer] is defined %}
+          {% if hostvars[peer].yggdrasil_encryption_public_key is defined %}
+      "{{ hostvars[peer].yggdrasil_encryption_public_key }}",
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+    ]
   }
 
   # Allow tunneling non-Yggdrasil traffic over Yggdrasil. This effectively

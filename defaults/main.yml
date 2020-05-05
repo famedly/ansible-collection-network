@@ -7,9 +7,15 @@ yggdrasil_extra_peers: []
 yggdrasil_ansible_peers: []
 yggdrasil_interface_peer_interfaces: []
 yggdrasil_multicast_interfaces: [ ".*" ]
+yggdrasil_limit_incoming_connections: true
+yggdrasil_sfw_enable: false
+yggdrasil_sfw_allow_direct: true
+yggdrasil_sfw_allow_remote: true
+yggdrasil_sfw_allow_outbound: true
+yggdrasil_sfw_ansible_whitelist: []
+yggdrasil_sfw_ansible_blacklist: []
 yggdrasil_node_name: "{{ inventory_hostname }}"
 yggdrasil_node_info_privacy: false
-yggdrasil_limit_incoming_connections: true
 yggdrasil_node_info:
   name: "{{ yggdrasil_node_name }}"
   deployment: ansible
