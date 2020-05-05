@@ -7,13 +7,13 @@
   Peers: [
     {% for peer in yggdrasil_extra_peers %}
       {% if peer.listen_uri is defined %}
-    "{{ peer.listen_uri }}",
+    "{{ peer.listen_uri }}", # {{ peer.name | default('Unnamed extra peer') }}
       {% endif %}
     {% endfor %}
     {% for peer in yggdrasil_ansible_peers %}
       {% if hostvars[peer] is defined %}
         {% if hostvars[peer].yggdrasil_listen_address is defined %}
-    "{{ hostvars[peer].yggdrasil_listen_address }}",
+    "{{ hostvars[peer].yggdrasil_listen_address }}", # {{ peer }}
         {% endif %}
       {% endif %}
     {% endfor %}
@@ -65,13 +65,13 @@
     {% if yggdrasil_limit_incoming_connections %}
       {% for peer in yggdrasil_extra_peers %}
         {% if peer.public_key is defined %}
-    "{{ peer.public_key }}",
+    "{{ peer.public_key }}", # {{ peer.name | default('Unnamed extra peer') }}
         {% endif %}
       {% endfor %}
       {% for peer in yggdrasil_ansible_peers %}
         {% if hostvars[peer] is defined %}
           {% if hostvars[peer].yggdrasil_encryption_public_key is defined %}
-    "{{ hostvars[peer].yggdrasil_encryption_public_key }}",
+    "{{ hostvars[peer].yggdrasil_encryption_public_key }}", # {{ peer }}
           {% endif %}
         {% endif %}
       {% endfor %}
@@ -136,13 +136,13 @@
     WhitelistEncryptionPublicKeys: [
       {% for peer in yggdrasil_extra_peers %}
         {% if peer.public_key is defined and peer.sfw is defined and peer.sfw == 'whitelisted' %}
-      "{{ peer.public_key }}",
+      "{{ peer.public_key }}", # {{ peer.name | default('Unnamed extra peer') }}
         {% endif %}
       {% endfor %}
       {% for peer in yggdrasil_sfw_ansible_whitelist %}
         {% if hostvars[peer] is defined %}
           {% if hostvars[peer].yggdrasil_encryption_public_key is defined %}
-      "{{ hostvars[peer].yggdrasil_encryption_public_key }}",
+      "{{ hostvars[peer].yggdrasil_encryption_public_key }}", # {{ peer }}
           {% endif %}
         {% endif %}
       {% endfor %}
@@ -153,13 +153,13 @@
     BlacklistEncryptionPublicKeys: [
       {% for peer in yggdrasil_extra_peers %}
         {% if peer.public_key is defined and peer.sfw is defined and peer.sfw == 'blacklisted' %}
-      "{{ peer.public_key }}",
+      "{{ peer.public_key }}", # {{ peer.name | default('Unnamed extra peer') }}
         {% endif %}
       {% endfor %}
       {% for peer in yggdrasil_sfw_ansible_blacklist %}
         {% if hostvars[peer] is defined %}
           {% if hostvars[peer].yggdrasil_encryption_public_key is defined %}
-      "{{ hostvars[peer].yggdrasil_encryption_public_key }}",
+      "{{ hostvars[peer].yggdrasil_encryption_public_key }}", # {{ peer }}
           {% endif %}
         {% endif %}
       {% endfor %}
