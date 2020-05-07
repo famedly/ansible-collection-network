@@ -6,15 +6,15 @@
   # use this section when you may connect via different interfaces.
   Peers: [
     {% for peer in yggdrasil_extra_peers %}
-      {% if peer.listen_uri is defined %}
-    "{{ peer.listen_uri }}", # {{ peer.name | default('Unnamed extra peer') }}
+      {% if peer.peering is defined and peer.peering.global is defined %}
+    "{{ peer.peering.global }}", # {{ peer.name | default('Unnamed extra peer') }}
       {% endif %}
     {% endfor %}
     {% for peer in yggdrasil_ansible_peers %}
-      {% if hostvars[peer] is defined %}
-        {% if hostvars[peer].yggdrasil_listen_address is defined %}
-    "{{ hostvars[peer].yggdrasil_listen_address }}", # {{ peer }}
-        {% endif %}
+      {% if peer.peering is defined and peer.peering
+        and hostvars[peer.name] is defined
+        and hostvars[peer.name].yggdrasil_listen_address is defined %}
+    "{{ hostvars[peer.name].yggdrasil_listen_address }}", # {{ peer.name }}
       {% endif %}
     {% endfor %}
   ]
@@ -24,12 +24,14 @@
   # Note that SOCKS peerings will NOT be affected by this option and should
   # go in the "Peers" section instead.
   InterfacePeers: {
-    {% for interface in yggdrasil_interface_peer_interfaces %}
-      {{ interface.identifier }}: [
-        {% for peer in interface.peers %}
-    "{{ peer }}",
-        {% endfor %}
-      ],
+    {% for interface in yggdrasil_interfaces %}
+    "{{ interface }}": [
+      {% for peer in yggdrasil_extra_peers %}
+        {% if peer.peering.interfaces[interface] is defined %}
+      "{{ peer.peering.interfaces[interface] }}", # {{ peer.name | default('Unnamed extra peer') }}
+        {% endif %}
+      {% endfor %}
+    ]
     {% endfor %}
   }
 
@@ -64,15 +66,15 @@
   AllowedEncryptionPublicKeys: [
     {% if yggdrasil_limit_incoming_connections %}
       {% for peer in yggdrasil_extra_peers %}
-        {% if peer.public_key is defined %}
+        {% if peer.public_key is defined and peer.peering is defined %}
     "{{ peer.public_key }}", # {{ peer.name | default('Unnamed extra peer') }}
         {% endif %}
       {% endfor %}
       {% for peer in yggdrasil_ansible_peers %}
-        {% if hostvars[peer] is defined %}
-          {% if hostvars[peer].yggdrasil_encryption_public_key is defined %}
-    "{{ hostvars[peer].yggdrasil_encryption_public_key }}", # {{ peer }}
-          {% endif %}
+        {% if peer.peering is defined and peer.peering
+          and hostvars[peer.name] is defined
+	  and hostvars[peer.name].yggdrasil_encryption_public_key is defined %}
+    "{{ hostvars[peer.name].yggdrasil_encryption_public_key }}", # {{ peer.name }}
         {% endif %}
       {% endfor %}
     {% endif %}
@@ -139,11 +141,11 @@
       "{{ peer.public_key }}", # {{ peer.name | default('Unnamed extra peer') }}
         {% endif %}
       {% endfor %}
-      {% for peer in yggdrasil_sfw_ansible_whitelist %}
-        {% if hostvars[peer] is defined %}
-          {% if hostvars[peer].yggdrasil_encryption_public_key is defined %}
-      "{{ hostvars[peer].yggdrasil_encryption_public_key }}", # {{ peer }}
-          {% endif %}
+      {% for peer in yggdrasil_ansible_peers %}
+        {% if peer.sfw is defined and peer.sfw == 'whitelisted'
+          and hostvars[peer.name] is defined
+	  and hostvars[peer.name].yggdrasil_encryption_public_key is defined %}
+      "{{ hostvars[peer.name].yggdrasil_encryption_public_key }}", # {{ peer.name }}
         {% endif %}
       {% endfor %}
     ]
@@ -156,11 +158,11 @@
       "{{ peer.public_key }}", # {{ peer.name | default('Unnamed extra peer') }}
         {% endif %}
       {% endfor %}
-      {% for peer in yggdrasil_sfw_ansible_blacklist %}
-        {% if hostvars[peer] is defined %}
-          {% if hostvars[peer].yggdrasil_encryption_public_key is defined %}
-      "{{ hostvars[peer].yggdrasil_encryption_public_key }}", # {{ peer }}
-          {% endif %}
+      {% for peer in yggdrasil_ansible_peers %}
+        {% if peer.sfw is defined and peer.sfw == 'blacklisted'
+          and hostvars[peer.name] is defined
+	  and hostvars[peer.name].yggdrasil_encryption_public_key is defined %}
+      "{{ hostvars[peer.name].yggdrasil_encryption_public_key }}", # {{ peer.name }}
         {% endif %}
       {% endfor %}
     ]

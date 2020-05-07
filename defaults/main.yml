@@ -5,7 +5,7 @@ yggdrasil_config_listen_address: "[::]:61216"
 yggdrasil_admin_listen_address: "unix:///var/run/yggdrasil.sock"
 yggdrasil_extra_peers: []
 yggdrasil_ansible_peers: []
-yggdrasil_interface_peer_interfaces: []
+yggdrasil_interfaces: []
 yggdrasil_multicast_interfaces: [ ".*" ]
 yggdrasil_limit_incoming_connections: true
 yggdrasil_sfw_enable: false

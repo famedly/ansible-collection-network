@@ -1,6 +1,8 @@
 yggdrasil
 =========
 
+![Matrix](https://img.shields.io/matrix/ansible-yggdrasil:matrix.org)
+
 Deploy yggdrasil using Ansible.
 
 Dependencies
