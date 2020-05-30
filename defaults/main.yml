@@ -14,3 +14,7 @@ traefik_entrypoints:
   - name: web-secure
     config:
       address: ":443"
+
+traefik_container_image_ref: "{{ traefik_container_image_name }}:{{ traefik_container_image_tag }}"
+traefik_container_image_name: docker.io/traefik
+traefik_container_image_tag: v2.2

@@ -52,7 +52,7 @@
 - name: Deploy traefik-container
   docker_container:
     name: traefik
-    image: docker.io/traefik:v2.2
+    image: '{{ traefik_container_image_ref }}'
     network_mode: host
     restart_policy: unless-stopped
 #       user: "{{ userretval.uid }}:{{ userretval.group }}"
