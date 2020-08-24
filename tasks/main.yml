@@ -49,6 +49,7 @@
     - api-router
     - https-redirect
     - tls
+  notify: restart traefik
 
 - name: Deploy traefik-container
   docker_container:
