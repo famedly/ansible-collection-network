@@ -15,3 +15,10 @@ tls:
       minVersion: "VersionTLS13"
       sniStrict: true
       preferServerCipherSuites: true
+http:
+  middlewares:
+    hsts:
+      headers:
+        stsPreload: true
+        stsSeconds: 31536000
+        stsIncludeSubdomains: true
