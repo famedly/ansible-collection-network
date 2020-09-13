@@ -1,0 +1,15 @@
+namespace: famedly
+name: network
+version: 0.1.0
+readme: README.md
+authors:
+- Jan Christian Grünhage <jan.christian@gruenhage.xyz>
+description: Collection of networking roles
+license:
+- AGPL-3.0-only
+tags: []
+dependencies: {}
+repository: https://gitlab.com/famedly/ansible/collections/network
+documentation: https://gitlab.com/famedly/ansible/collections/network
+homepage: https://gitlab.com/famedly/ansible/collections/network
+issues: https://gitlab.com/famedly/ansible/collections/network/-/issues
