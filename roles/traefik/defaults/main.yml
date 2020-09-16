@@ -1,3 +1,4 @@
+traefik_version: "2.2"
 traefik_enable_docker: true
 traefik_enable_api: true
 traefik_enable_api_dashboard: true
@@ -5,6 +6,7 @@ traefik_enable_api_debug: false
 traefik_enable_api_authentication: false
 traefik_enable_prometheus: true
 traefik_api_users: []
+traefik_container_labels: {}
 traefik_container_env: {}
 traefik_acme_challenge: "HTTP-01"
 traefik_acme_enabled: true
@@ -20,4 +22,4 @@ traefik_metrics_enable_tls: false
 
 traefik_container_image_ref: "{{ traefik_container_image_name }}:{{ traefik_container_image_tag }}"
 traefik_container_image_name: docker.io/traefik
-traefik_container_image_tag: v2.2
+traefik_container_image_tag: "v{{ traefik_version }}"

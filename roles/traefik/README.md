@@ -24,6 +24,7 @@ Role variables
 | traefik\_enable\_api\_authentication | Enable basic auth on the api    |
 | traefik\_api\_users                  | user:password for the api       |
 | traefik\_api\_host                   | (V)Host for the api             |
+| traefik\_version                     | traefik version                 |
 
 License
 -------

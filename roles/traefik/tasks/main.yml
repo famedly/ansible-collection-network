@@ -60,6 +60,7 @@
     restart_policy: unless-stopped
 #       user: "{{ userretval.uid }}:{{ userretval.group }}"
 #       TODO: Make running this as non-root work.
+    labels: "{{ traefik_container_labels_complete }}"
     pull: true
     env: "{{ traefik_container_env }}"
     volumes:
