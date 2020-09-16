@@ -4,6 +4,12 @@ entryPoints:
   {{ entrypoint.name }}: {{ entrypoint.config | tojson }}
 {% endfor %}
 
+{% if traefik_enable_prometheus %}
+metrics:
+  prometheus:
+    manualRouting: true
+{% endif %}
+
 {% if traefik_enable_api %}
 api:
   dashboard: {{ traefik_enable_api_dashboard }}

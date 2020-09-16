@@ -3,6 +3,7 @@ traefik_enable_api: true
 traefik_enable_api_dashboard: true
 traefik_enable_api_debug: false
 traefik_enable_api_authentication: false
+traefik_enable_prometheus: true
 traefik_api_users: []
 traefik_container_env: {}
 traefik_acme_challenge: "HTTP-01"
@@ -14,6 +15,8 @@ traefik_entrypoints:
   - name: web-secure
     config:
       address: ":443"
+traefik_metrics_rule: "Host(`{{ traefik_api_host }}`) && Path(`/metrics`)"
+traefik_metrics_enable_tls: false
 
 traefik_container_image_ref: "{{ traefik_container_image_name }}:{{ traefik_container_image_tag }}"
 traefik_container_image_name: docker.io/traefik

@@ -1,0 +1,26 @@
+#jinja2: lstrip_blocks: "True", trim_blocks: "True"
+{% if traefik_enable_prometheus %}
+http:
+  routers:
+    metrics:
+      rule: {{ traefik_metrics_rule }}
+      entryPoints:
+        {% for entrypoint in traefik_metrics_entrypoints %}
+        - {{ entrypoint }}
+        {% endfor %}
+      service: prometheus@internal
+      {% if traefik_metrics_enable_tls %}
+      tls:
+        certResolver: letsencrypt
+        {% if traefik_api_tls_domains is defined %}
+        domains:
+          {% for domain in traefik_api_tls_domains %}
+          - main: "{{ domain.main }}"
+            sans:
+	    {% for san in domain.sans %}
+              - "{{ san }}"
+            {% endfor %}
+          {% endfor %}
+        {% endif %}
+      {% endif %}
+{% endif %}

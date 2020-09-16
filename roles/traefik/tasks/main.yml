@@ -47,6 +47,7 @@
     group: traefik
   loop:
     - api-router
+    - metrics-router
     - https-redirect
     - tls
   notify: restart traefik
