@@ -5,12 +5,13 @@ http:
     api:
       rule: Host(`{{ traefik_api_host }}`)
       entryPoints:
-        - web-secure
+        - {{ traefik_api_entrypoint }}
       service: api@internal
       {% if traefik_enable_api_authentication %}
       middlewares:
         - apiAuth
       {% endif %}
+      {% if traefik_enable_api_tls is defined %}
       tls:
         certResolver: letsencrypt
         {% if traefik_api_tls_domains is defined %}
@@ -23,6 +24,7 @@ http:
             {% endfor %}
           {% endfor %}
         {% endif %}
+      {% endif %}
   {% if traefik_enable_api_authentication %}
   middlewares:
     apiAuth:

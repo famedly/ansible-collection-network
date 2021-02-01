@@ -1,11 +1,21 @@
 traefik_version: "2.2"
+traefik_base_path: /opt/traefik
+traefik_log_level: ERROR
 traefik_enable_docker: true
 traefik_enable_api: true
+traefik_enable_api_tls: true
 traefik_enable_api_dashboard: true
 traefik_enable_api_debug: false
 traefik_enable_api_authentication: false
 traefik_enable_prometheus: true
+traefik_enable_access_log: false
 traefik_api_users: []
+traefik_api_entrypoint: web-secure
+traefik_container_name: traefik
+#traefik_container_networks:
+traefik_container_network_mode: host
+traefik_container_etc_hosts: {}
+traefik_container_ports: []
 traefik_container_labels: {}
 traefik_container_env: {}
 traefik_acme_challenge: "HTTP-01"
@@ -19,7 +29,14 @@ traefik_entrypoints:
       address: ":443"
 traefik_metrics_rule: "Host(`{{ traefik_api_host }}`) && Path(`/metrics`)"
 traefik_metrics_enable_tls: false
+traefik_dynamic_configs:
+  - api-router
+  - metrics-router
+  - https-redirect
+  - tls
 
 traefik_container_image_ref: "{{ traefik_container_image_name }}:{{ traefik_container_image_tag }}"
 traefik_container_image_name: docker.io/traefik
 traefik_container_image_tag: "v{{ traefik_version }}"
+traefik_container_socket: /var/run/docker.sock
+traefik_container_pull: true

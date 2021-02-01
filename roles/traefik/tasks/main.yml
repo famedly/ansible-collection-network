@@ -9,7 +9,7 @@
 
 - name: Create traefik base directory
   file:
-    path: /opt/traefik
+    path: "{{ traefik_base_path }}"
     owner: traefik
     group: traefik
     state: directory
@@ -17,7 +17,7 @@
 
 - name: Create traefik config directory
   file:
-    path: /opt/traefik/config.d
+    path: "{{ traefik_base_path }}/config.d"
     owner: traefik
     group: traefik
     state: directory
@@ -25,7 +25,7 @@
 
 - name: Create acme.json
   file:
-    path: /opt/traefik/acme.json
+    path: "{{ traefik_base_path }}/acme.json"
     owner: traefik
     group: traefik
     state: touch
@@ -34,7 +34,7 @@
 - name: Template config file
   template:
     src: traefik.yml.j2
-    dest: /opt/traefik/config.yml
+    dest: "{{ traefik_base_path }}/config.yml"
     owner: traefik
     group: traefik
   notify: restart traefik
@@ -42,30 +42,29 @@
 - name: template dynamic configs
   template:
     src: "{{ item }}.yml.j2"
-    dest: "/opt/traefik/config.d/{{ item }}.yml"
+    dest: "{{ traefik_base_path }}/config.d/{{ item }}.yml"
     owner: traefik
     group: traefik
-  loop:
-    - api-router
-    - metrics-router
-    - https-redirect
-    - tls
+  loop: "{{ traefik_dynamic_configs }}"
   notify: restart traefik
 
 - name: Deploy traefik-container
   docker_container:
-    name: traefik
+    name: "{{ traefik_container_name }}"
     image: '{{ traefik_container_image_ref }}'
-    network_mode: host
+    networks: "{{ traefik_container_networks | default(omit) }}"
+    etc_hosts: "{{ traefik_container_etc_hosts }}"
+    network_mode: "{{ traefik_container_network_mode }}"
+    ports: "{{ traefik_container_ports }}"
     restart_policy: unless-stopped
 #       user: "{{ userretval.uid }}:{{ userretval.group }}"
 #       TODO: Make running this as non-root work.
     labels: "{{ traefik_container_labels_complete }}"
-    pull: true
+    pull: "{{ traefik_container_pull }}"
     env: "{{ traefik_container_env }}"
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"
-      - "/opt/traefik/config.yml:/traefik.yml"
-      - "/opt/traefik/config.d/:/opt/traefik/config.d/"
-      - "/opt/traefik/acme.json:/acme.json"
+      - "{{ traefik_container_socket }}:/var/run/docker.sock"
+      - "{{ traefik_base_path }}/config.yml:/traefik.yml"
+      - "{{ traefik_base_path }}/config.d/:{{ traefik_base_path }}/config.d/"
+      - "{{ traefik_base_path }}/acme.json:/acme.json"
 

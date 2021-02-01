@@ -38,4 +38,11 @@ providers:
     exposedByDefault: false
   {% endif %}
   file:
-    directory: /opt/traefik/config.d
+    directory: {{ traefik_base_path }}/config.d
+
+log:
+  level: {{ traefik_log_level }}
+
+{% if traefik_enable_access_log %}
+accessLog: {}
+{% endif %}
