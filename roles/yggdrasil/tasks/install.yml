@@ -1,14 +1,14 @@
 ---
 - import_tasks: install/void.yml
-  when: ansible_lsb.id == "VoidLinux"
+  when: ansible_os_family == "void"
 
 - import_tasks: install/fedora.yml
-  when: ansible_lsb.id == "Fedora"
+  when: ansible_os_family == "RedHat"
 
 - import_tasks: install/debian.yml
-  when: ansible_lsb.id == "Debian" or ansible_lsb.id == "Ubuntu"
+  when: ansible_os_family == "Debian"
 
 - import_tasks: install/arch.yml
-  when: ansible_lsb.id == "Arch"
+  when: ansible_os_family == "Archlinux"
 
 # TODO: Support more distros (and maybe even Windows one day)
