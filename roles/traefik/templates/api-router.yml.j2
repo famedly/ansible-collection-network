@@ -11,10 +11,10 @@ http:
       middlewares:
         - apiAuth
       {% endif %}
-      {% if traefik_enable_api_tls is defined %}
+      {% if traefik_enable_api_tls %}
       tls:
         certResolver: letsencrypt
-        {% if traefik_api_tls_domains is defined %}
+        {% if traefik_api_tls_domains %}
         domains:
           {% for domain in traefik_api_tls_domains %}
           - main: "{{ domain.main }}"
