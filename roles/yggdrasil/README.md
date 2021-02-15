@@ -44,12 +44,13 @@ an array at `yggdrasil_ansible_peers`, and set an `yggdrasil_listen_address` in 
 
 ```yaml
 yggdrasil_ansible_peers:
-  - another
-  - host
-  - and
-  - some
-  - more
-  - hosts
+  - name: "foo-host"
+    peering: true
+  - name: "bar-host"
+    peering: true
+    sfw: "whitelisted"
+  - name: "foobar"
+    sfw: "blacklisted"
 ```
 
 For external peers, the procedure is similar.
@@ -57,13 +58,20 @@ Adding the public peers of the roles author would look like this:
 
 ```yaml
 yggdrasil_extra_peers:
-  - listen_uri: "tcp://108.175.10.127:61216" # USA/Kansas/Lenexa
+  - name: "# USA/Kansas/Lenexa"
+    peering:
+      global: "tcp://108.175.10.127:61216"
     public_key: "d00480cf92fe09c2dbcac6b3df1846bfc2d1457f4634ede4f83892d5bdb7ad59"
 
-  - listen_uri: "tcp://82.165.69.111:61216"  # Germany/Baden-Württemberg/Baden-Baden
+  - name: "Germany/Baden-Württemberg/Baden-Baden"
+    peering:
+      global: "tcp://82.165.69.111:61216"
+    sfw: "whitelisted"
     public_key: "946d473fd07acc8a5a0490174a34a8a11be30a2d4549e4d3013ec5f2fb40717e"
 
-  - listen_uri: "tcp://51.75.65.46:65352"    # Germany/Hessen/Frankfurt-am-Main
+  - name: "Germany/Hessen/Frankfurt-am-Main"
+    peering:
+      global: "tcp://51.75.65.46:65352"
     public_key: "bf7a958893a173b9081c12bc318f60cd3a7c4989cf0435be9da7ebafc1a6ee13"
 ```
 
@@ -71,6 +79,18 @@ yggdrasil_extra_peers:
 
 For other available variables take a look at the `templates/yggdrasil.conf.j2`,
 `vars/main.yml` and `defaults/main.yml`
+Some useful config parameters might be:
+
+```yaml
+yggdrasil_node_name: "{{ var_containing_some_name }}"
+yggdrasil_nodeinfo_privacy: "{{ true if group_names contains private_host_group else false }}"
+yggdrasil_sfw_enable: true
+yggdrasil_sfw_allow_direct: false
+yggdrasil_sfw_allow_remote: false
+yggdrasil_sfw_allow_outbound: false
+yggdrasil_multicast_interfaces: []
+yggdrasil_listen_address: "tcp://[{{ hosts_public_ipv6 }}]:61216"
+```
 
 
 Example Playbook
@@ -80,6 +100,8 @@ Example Playbook
       roles:
          - role: yggdrasil
            become: yes
+      vars:
+        yggdrasil_node_name: "testvar"
 
 License
 -------
