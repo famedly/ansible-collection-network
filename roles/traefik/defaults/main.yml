@@ -20,7 +20,7 @@ traefik_container_labels: {}
 traefik_container_env: {}
 traefik_acme_challenge: "HTTP-01"
 traefik_acme_enabled: true
-traefik_entrypoints:
+traefik_default_entrypoints:
   - name: web
     config:
       address: ":80"
@@ -30,6 +30,7 @@ traefik_entrypoints:
   - name: ping
     config:
       address: ":8022"
+traefik_additional_entrypoints: []
 traefik_metrics_rule: "Host(`{{ traefik_api_host }}`) && Path(`/metrics`)"
 traefik_metrics_enable_tls: false
 traefik_dynamic_configs:
