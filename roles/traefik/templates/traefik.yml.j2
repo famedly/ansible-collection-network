@@ -4,6 +4,9 @@ entryPoints:
   {{ entrypoint.name }}: {{ entrypoint.config | tojson }}
 {% endfor %}
 
+ping:
+  entryPoint: "ping"
+
 {% if traefik_enable_prometheus %}
 metrics:
   prometheus:

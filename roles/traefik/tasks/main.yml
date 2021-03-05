@@ -69,4 +69,6 @@
       - "{{ traefik_base_path }}/config.yml:/traefik.yml"
       - "{{ traefik_base_path }}/config.d/:{{ traefik_base_path }}/config.d/"
       - "{{ traefik_base_path }}/acme.json:/acme.json"
-
+    healthcheck:
+      test: >-
+        wget -q --spider http://localhost:8022/ping
