@@ -2,4 +2,4 @@
 traefik_container_labels_complete: "{{ traefik_container_labels_base | combine(traefik_container_labels) }}"
 traefik_container_labels_base:
   version: "{{ traefik_version }}"
-traefik_entrypoints: "{{ traefik_default_entrypoints + traefik_additional_entrypoints }}}"
+traefik_entrypoints: "{{ traefik_default_entrypoints + traefik_additional_entrypoints }}"
