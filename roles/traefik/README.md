@@ -70,6 +70,16 @@ You would use those resolvers in your traefik routers like this: `routers.http.$
 This allows you to use different certificate resolvers for different domains (or even routers, but you shouldn't).
 Usually, you only ever need to specify a single certificate resolver.
 
+### Using provided certificates
+
+If you already have a certificate (as a file, for example) and you want to deploy them for usage in traefik, you can enable manual TLS management by setting `traefik_manual_tls_management_enabled: true`.
+
+You need to provide the certificates you want the role to deploy in `traefik_certs_to_deploy` as objects with the keys `name` (a slug for the cert), `fullchain` and `privkey`.
+
+The certificates are deployed to `traefik_cert_path`, which is `/opt/traefik/certs` by default.
+
+If the certificates are already on the target machine, you can specify them directly in `traefik_certs_to_load`, as objects with the keys `fullchain` and `privkey` (which are paths to the files on the target machine).
+
 ## License
 
 AGPLv3

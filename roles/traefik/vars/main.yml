@@ -8,7 +8,16 @@ traefik_acme_supported_challenges:
 traefik_cert_resolvers_supported_types:
   - acme
 
+traefik_dynamic_configs: "{{ traefik_dynamic_configs_base + traefik_dynamic_extra_configs }}"
+
 traefik_container_labels_complete: "{{ traefik_container_labels_base | combine(traefik_container_labels) }}"
 traefik_container_labels_base:
   version: "{{ traefik_version }}"
 traefik_entrypoints: "{{ traefik_default_entrypoints + traefik_additional_entrypoints }}"
+
+traefik_container_volumes_base:
+  - "{{ traefik_container_socket }}:/var/run/docker.sock"
+  - "{{ traefik_base_path }}/config.yml:/traefik.yml"
+  - "{{ traefik_base_path }}/config.d/:{{ traefik_base_path }}/config.d/"
+  - "{{ traefik_base_path }}/acme.json:/acme.json"
+traefik_container_volumes: "{{ traefik_container_volumes_base + traefik_container_extra_volumes|default([]) }}"

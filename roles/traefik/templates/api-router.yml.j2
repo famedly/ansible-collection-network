@@ -13,6 +13,7 @@ http:
       {% endif %}
       {% if traefik_enable_api_tls %}
       tls:
+        {% if not traefik_tls_manual_cert_management_enabled %}
         certResolver: letsencrypt
         {% if traefik_api_tls_domains %}
         domains:
@@ -23,6 +24,7 @@ http:
               - "{{ san }}"
             {% endfor %}
           {% endfor %}
+        {% endif %}
         {% endif %}
       {% endif %}
   {% if traefik_enable_api_authentication %}

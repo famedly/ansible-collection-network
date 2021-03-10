@@ -35,6 +35,12 @@ traefik_cert_resolvers: []
 #      contact:
 #        - "mailto: {{ acme.registration_email }}"
 
+traefik_container_volumes:
+  - "{{ traefik_container_socket }}:/var/run/docker.sock"
+  - "{{ traefik_base_path }}/config.yml:/traefik.yml"
+  - "{{ traefik_base_path }}/config.d/:{{ traefik_base_path }}/config.d/"
+  - "{{ traefik_base_path }}/acme.json:/acme.json"
+
 traefik_default_entrypoints:
   - name: web
     config:
@@ -48,7 +54,9 @@ traefik_default_entrypoints:
 traefik_additional_entrypoints: []
 traefik_metrics_rule: "Host(`{{ traefik_api_host }}`) && Path(`/metrics`)"
 traefik_metrics_enable_tls: false
-traefik_dynamic_configs:
+
+traefik_dynamic_extra_configs: []
+traefik_dynamic_configs_base:
   - api-router
   - metrics-router
   - https-redirect
@@ -59,3 +67,10 @@ traefik_container_image_name: docker.io/traefik
 traefik_container_image_tag: "v{{ traefik_version }}"
 traefik_container_socket: /var/run/docker.sock
 traefik_container_pull: true
+
+traefik_manual_tls_management_enabled: false
+traefik_cert_path: "{{ traefik_base_path }}/certs"
+# Expects objects with the key "name", "fullchain" and "privkey"
+traefik_certs_to_deploy: []
+# Expects objects with a "fullchain" and "privkey" field
+traefik_certs_to_load: []

@@ -1,0 +1,21 @@
+---
+
+- name: Deploy fullchain to target host
+  copy:
+    dest: "{{ fullchain_path }}"
+    content: "{{ item.fullchain }}"
+    owner: traefik
+    group: traefik
+    mode: 0664
+
+- name: Deploy privkey to target host
+  copy:
+    dest: "{{ privkey_path }}"
+    content: "{{ item.privkey }}"
+    owner: traefik
+    group: traefik
+    mode: 0640
+
+- name: Register fullchain and privkey to the certs to be loaded
+  set_fact:
+    traefik_certs_to_load: "{{ traefik_certs_to_load + [ deployed_cert ] }}"

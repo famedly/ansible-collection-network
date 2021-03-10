@@ -15,6 +15,14 @@ tls:
       minVersion: "VersionTLS13"
       sniStrict: true
       preferServerCipherSuites: true
+{% if traefik_manual_tls_management_enabled %}
+  certificates:
+{% for cert in traefik_certs_to_load %}
+    - certFile: {{ cert.fullchain }}
+      keyFile: {{ cert.privkey }}
+{% endfor %}
+{% endif %}
+
 http:
   middlewares:
     hsts:

@@ -1,5 +1,5 @@
 ---
-# tasks file for traefik
+
 - name: Create user
   user:
     name: traefik
@@ -34,6 +34,16 @@
     owner: traefik
     group: traefik
     mode: 0600
+  tags: ['prepare', 'prepare-traefik']
+  when: traefik_enable_api|bool and traefik_enable_api_authentication|bool
+
+- name: Deploy manually managed certificates
+  include_tasks:
+    file: manual-cert-management.yml
+    apply:
+      tags: ['prepare', 'prepare-traefik']
+  when: traefik_manual_tls_management_enabled|bool
+  tags: ['prepare', 'prepare-traefik']
 
 - name: Setup ACME
   include_tasks:
@@ -51,7 +61,7 @@
   notify: restart traefik
   tags: ['deploy', 'deploy-traefik']
 
-- name: template dynamic configs
+- name: Template dynamic configurations for {{ item }}
   template:
     src: "{{ item }}.yml.j2"
     dest: "{{ traefik_base_path }}/config.d/{{ item }}.yml"
@@ -79,15 +89,11 @@
     ports: "{{ traefik_container_ports }}"
     restart_policy: unless-stopped
     state: started
-#       user: "{{ userretval.uid }}:{{ userretval.group }}"
 #       TODO: Make running this as non-root work.
+#       user: "{{ userretval.uid }}:{{ userretval.group }}"
     labels: "{{ traefik_container_labels_complete }}"
     env: "{{ traefik_container_env }}"
-    volumes:
-      - "{{ traefik_container_socket }}:/var/run/docker.sock"
-      - "{{ traefik_base_path }}/config.yml:/traefik.yml"
-      - "{{ traefik_base_path }}/config.d/:{{ traefik_base_path }}/config.d/"
-      - "{{ traefik_base_path }}/acme.json:/acme.json"
+    volumes: "{{ traefik_container_volumes }}"
     healthcheck:
       test: >-
         wget -q --spider http://localhost:8022/ping

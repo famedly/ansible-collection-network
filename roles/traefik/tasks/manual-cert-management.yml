@@ -1,0 +1,26 @@
+---
+
+- name: Create traefik cert directory
+  file:
+    path: "{{ traefik_cert_path }}"
+    owner: traefik
+    group: traefik
+    state: directory
+    mode: 0750
+
+- name: Deploy certificates
+  include_tasks: deploy-manual-cert.yml
+  vars:
+    fullchain_path: "{{ traefik_cert_path }}/{{ item.name }}-fullchain.pem"
+    privkey_path: "{{ traefik_cert_path }}/{{ item.name }}-privkey.pem"
+    deployed_cert:
+      fullchain: "{{ fullchain_path }}"
+      privkey: "{{ privkey_path }}"
+  loop: "{{ traefik_certs_to_deploy }}"
+
+- name: Map certificates into container
+  set_fact:
+    traefik_container_volumes: >-2
+      {{ traefik_container_volumes + [ cert_mapping ] }}
+  vars:
+    cert_mapping: "{{ traefik_cert_path }}:{{ traefik_cert_path }}"
