@@ -11,6 +11,8 @@ ping:
 metrics:
   prometheus:
     manualRouting: true
+    addEntryPointsLabels: true
+    addServicesLabels: true
 {% endif %}
 
 {% if traefik_enable_api %}
