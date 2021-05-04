@@ -18,8 +18,22 @@ traefik_container_etc_hosts: {}
 traefik_container_ports: []
 traefik_container_labels: {}
 traefik_container_env: {}
-traefik_acme_challenge: "HTTP-01"
-traefik_acme_enabled: true
+
+traefik_cert_resolvers: []
+# wants:
+# slug: "myresolver"
+# acme:
+#   ca_server: https://acme-v02.api.letsencrypt.org/directory
+#   registration_email: "devops@company.com"
+#   challenge_type: "HTTP-01"
+#   challenge_config: `{entrypoint: web}` or `{provider: cloudflare}`
+#   account:
+#      uri: set_to_not_request_an_account
+#      privkey: $privkey
+#      privkey_type: RSA$length
+#      contact:
+#        - "mailto: {{ acme.registration_email }}"
+
 traefik_default_entrypoints:
   - name: web
     config:

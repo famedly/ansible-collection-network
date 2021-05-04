@@ -23,15 +23,8 @@
     state: directory
     mode: 0755
 
-- name: Create acme.json
-  file:
-    path: "{{ traefik_base_path }}/acme.json"
-    owner: traefik
-    group: traefik
-    state: touch
-    access_time: preserve
-    modification_time: preserve
-    mode: 0600
+- name: Setup ACME
+  import_tasks: acme.yml
 
 - name: Template config file
   template:

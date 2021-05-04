@@ -21,20 +21,28 @@ api:
   debug: {{ traefik_enable_api_debug }}
 {% endif %}
 
-{% if traefik_acme_enabled %}
+{% if traefik_cert_resolvers|length > 0 %}
 certificatesResolvers:
-  letsencrypt:
+{% for resolver in traefik_cert_resolvers %}
+  {{ resolver.slug }}:
+  {% if resolver.acme is defined %}
     acme:
-      email: {{ traefik_acme_email }}
-      {% if traefik_acme_challenge == 'HTTP-01'%}
-      httpChallenge:
-        entryPoint: web
-      {% elif traefik_acme_challenge == 'DNS-01' %}
-      dnsChallenge:
-        provider: {{ traefik_acme_dns_provider }}
-      {% elif traefik_acme_challenge == 'TLS-ALPN-01' %}
-      tlsChallenge: {}
+      email: "{{ resolver.acme.registration_email }}"
+      {% if resolver.acme.ca_server is defined %}
+      caServer: "{{ resolver.acme.ca_server }}"
       {% endif %}
+      {% if resolver.acme.challenge_type  == 'HTTP-01' %}
+      httpChallenge:
+        {{ resolver.acme.challenge_config | to_nice_yaml }}
+      {% elif resolver.acme.challenge_type == 'DNS-01' %}
+      dnsChallenge:
+        {{ resolver.acme.challenge_config | to_nice_yaml }}
+      {% elif resolver.acme.challenge_type == 'TLS-ALPN-01' %}
+      tlsChallenge:
+        {{ resolver.acme.challenge_config | to_nice_yaml }}
+      {% endif %}
+  {% endif %}
+{% endfor %}
 {% endif %}
 
 providers:

@@ -1,0 +1,102 @@
+---
+
+- name: Validate resolvers use supported types
+  fail:
+    msg: "Resolver {{ resolver.slug }} is not using a supported resolver (found {{ resolvers | join(', ') }}, allowed {{ traefik_cert_resolvers_supported_types | join(', ') }})"
+  when: resolver | intersect(traefik_cert_resolvers_supported_types) | length == 0
+  vars:
+    resolvers: "{{ resolver.keys() | difference([ 'slug' ]) | list }}"
+  loop: "{{ traefik_cert_resolvers }}"
+  loop_control:
+    loop_var: resolver
+    label: "{{ resolver.slug }}"
+
+- name: Validate ACME resolvers registration mails
+  fail:
+    msg: "Missing `registration_email` for  {{ resolver.slug }}"
+  when: resolver.acme.registration_email is not defined
+  loop: "{{ traefik_cert_resolvers | selectattr('acme', 'defined') }}"
+  loop_control:
+    loop_var: resolver
+    label: "{{ resolver.slug }}"
+
+- name: Validate ACME resolvers challenge type
+  fail:
+    msg: "Unsupported challenge type {{ resolver.acme.challenge_type }} for {{ resolver.slug }} (supported: {{ traefik_acme_supported_challenges | join(', ') }}"
+  when: resolver.acme.challenge_type not in traefik_acme_supported_challenges
+  loop: "{{ traefik_cert_resolvers | selectattr('acme', 'defined') }}"
+  loop_control:
+    loop_var: resolver
+    label: "{{ resolver.slug }}"
+
+- name: Validate ACME resolvers challenge configs
+  fail:
+    msg: "Invalid challenge configuration for {{ resolver.slug }}"
+  when: >-
+    (resolver.acme.challenge_type == 'HTTP-01'
+        and resolver.acme.challenge_config.entrypoint is not defined)
+    or (resolver.acme.challenge_type == 'DNS-01'
+        and resolver.acme.challenge_config.provider is not defined)
+  loop: "{{ traefik_cert_resolvers | selectattr('acme', 'defined') }}"
+  loop_control:
+    loop_var: resolver
+    label: "{{ resolver.slug }}"
+
+- name: Validate ACME resolvers account config
+  fail:
+    msg: "Invalid challenge configuration for {{ resolver.slug }}"
+  when: >-
+    resolver.acme.account.uri is not defined
+    or resolver.acme.account.privkey is not defined
+    or resolver.acme.account.privkey_type is not defined
+  loop: "{{ traefik_cert_resolvers | selectattr('acme.account', 'defined')}}"
+  loop_control:
+    loop_var: resolver
+    label: "{{ resolver.slug }}"
+
+- name: Check if acme.json exists on host already
+  stat:
+    path: "{{ traefik_base_path }}/acme.json"
+  register: acme_json_host
+
+# TODO: if acme.json does not exist, but no resolver has a specific account, touch the file
+
+- name: Fetch existing acme.json from host
+  slurp:
+    path: "{{ traefik_base_path }}/acme.json"
+  when: acme_json_host.stat.exists
+  register: existing_acme_config
+
+- name: Add cert resolver config
+  set_fact:
+    traefik_cert_resolver_config: >-
+      {{ traefik_cert_resolver_config|default([]) + [ { resolver.slug:  resolver_config } ] }}
+  vars:
+    resolver_config:
+      Account:
+        Email: "{{ resolver.acme.registration_email }}"
+        PrivateKey: "{{ resolver.acme.account.privkey }}"
+        KeyType: "{{ resolver.acme.account.privkey_type }}"
+        Registration:
+          body:
+            status: valid
+            contact: "{{ resolver.acme.account.contact }}"
+          uri: "{{ resolver.acme.account.uri }}"
+  loop: "{{ traefik_cert_resolvers | selectattr('acme.account', 'defined')}}"
+  loop_control:
+    loop_var: resolver
+    label: "{{ resolver.slug }}"
+
+- name: Combine acme configs
+  set_fact:
+    traefik_acme_config: "{{ existing_config|combine(traefik_cert_resolver_config|default({}), recursive=True) }}"
+  vars:
+    existing_config: "{{ existing_acme_config.content | b64decode | from_json if existing_acme_config is defined else {} }}"
+
+- name: Write acme.json to host
+  copy:
+    content: "{{ traefik_acme_config | to_nice_json(indent=4) }}"
+    dest: "{{ traefik_base_path }}/acme.json"
+    owner: traefik
+    group: traefik
+    mode: 0600

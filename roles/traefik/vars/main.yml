@@ -1,4 +1,13 @@
 ---
+
+traefik_acme_supported_challenges:
+  - HTTP-01
+  - DNS-01
+  - TLS-ALPN-01
+
+traefik_cert_resolvers_supported_types:
+  - acme
+
 traefik_container_labels_complete: "{{ traefik_container_labels_base | combine(traefik_container_labels) }}"
 traefik_container_labels_base:
   version: "{{ traefik_version }}"
