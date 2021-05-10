@@ -1,3 +1,6 @@
 ---
 - import_tasks: install.yml
+  tags: ['prepare', 'prepare-yggdrasil']
+
 - import_tasks: configure.yml
+  tags: ['deploy', 'deploy-yggdrasil']
