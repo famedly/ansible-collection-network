@@ -91,7 +91,7 @@
   set_fact:
     traefik_acme_config: "{{ existing_config|combine(traefik_cert_resolver_config|default({}), recursive=True) }}"
   vars:
-    existing_config: "{{ existing_acme_config.content | b64decode | from_json if existing_acme_config is defined else {} }}"
+    existing_config: "{{ existing_acme_config.content | b64decode | from_json if existing_acme_config.content is defined else {} }}"
 
 - name: Write acme.json to host
   copy:
