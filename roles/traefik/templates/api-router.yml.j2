@@ -29,9 +29,6 @@ http:
   middlewares:
     apiAuth:
       basicAuth:
-        users:
-          {% for basic_auth_user in traefik_api_users %}
-          - '{{ basic_auth_user }}'
-          {% endfor %}
+        usersFile: '{{ traefik_api_users_file }}'
   {% endif %}
 {% endif %}

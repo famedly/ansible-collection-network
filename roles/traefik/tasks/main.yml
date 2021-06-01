@@ -26,6 +26,15 @@
     mode: 0755
   tags: ['prepare', 'prepare-traefik']
 
+- name: Add admin user to password file and ensure permissions are set
+  community.general.htpasswd:
+    path: "{{ traefik_api_users_file }}"
+    name: "{{ traefik_api_admin_username }}"
+    password: "{{ traefik_api_admin_password }}"
+    owner: traefik
+    group: traefik
+    mode: 0600
+
 - name: Setup ACME
   include_tasks:
     file: acme.yml

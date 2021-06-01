@@ -18,7 +18,7 @@ This requires docker to be already installed.
 | `traefik_enable_api_dashboard`       | Enable traefiks dashboard       |
 | `traefik_enable_api_debug`           | Enable traefiks debug api       |
 | `traefik_enable_api_authentication`  | Enable basic auth on the api    |
-| `traefik_api_users`                  | user:password for the api       |
+| `traefik_api_admin_password`         | password for the api            |
 | `traefik_api_host`                   | (V)Host for the api             |
 | `traefik_version`                    | traefik version                 |
 | `traefik_cert_resolvers`             | Configures the certificate resolvers traefik uses |

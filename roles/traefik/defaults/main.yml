@@ -9,7 +9,6 @@ traefik_enable_api_debug: false
 traefik_enable_api_authentication: false
 traefik_enable_prometheus: true
 traefik_enable_access_log: false
-traefik_api_users: []
 traefik_api_entrypoint: web-secure
 traefik_container_name: traefik
 #traefik_container_networks:
@@ -18,6 +17,8 @@ traefik_container_etc_hosts: {}
 traefik_container_ports: []
 traefik_container_labels: {}
 traefik_container_env: {}
+traefik_api_users_file: "{{ traefik_base_path }}/config.d/auth.htpasswd"
+traefik_api_admin_username: admin
 
 traefik_cert_resolvers: []
 # wants:
