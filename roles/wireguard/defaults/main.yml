@@ -1,0 +1,17 @@
+---
+
+wg_basedir: /etc/wireguard
+
+wg_privkey_file: "{{ wg_basedir }}/{{ item.iface_name }}_priv.key"
+wg_pubkey_file: "{{ wg_basedir }}/{{ item.iface_name }}.pub"
+
+wg_ifaces: []
+# - iface_name: testnet
+#   ip_addresses_cidr:
+#     - 192.168.2.1/24
+#     - 192.168.42.5/28
+#   peering_ip: 10.10.10.10
+#   peering_port: 51820
+#   peers:
+#     - my_ansible_host_1
+#     - my_ansible_host_2

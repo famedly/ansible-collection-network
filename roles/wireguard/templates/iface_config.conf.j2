@@ -1,0 +1,33 @@
+[Interface]
+Address = {{ item.ip_addresses_cidr | join (', ') }}
+ListenPort = {{ item.peering_port }}
+PrivateKey = {{ wg_privkeys[item.iface_name] }}
+{% if item.mtu is defined %}
+MTU = {{ item.mtu }}
+{% endif %}
+
+{% for peer in item.peers %}
+[Peer]
+PublicKey = {{ hostvars[peer].wg_pubkeys[item.iface_name] }}
+{% if item.psk_enabled is defined %}
+PreSharedKey = {{ hostvars[peer].pre_shared_keys[item.iface_name] }}
+{% endif %}
+AllowedIPs = {{ hostvars[peer].wg_ifaces
+    | selectattr('iface_name', 'equalto', item.iface_name)
+    | map(attribute='ip_addresses_cidr')
+    | list
+    | first
+    | join(', ') }}
+Endpoint = {{
+    [ (hostvars[peer].wg_ifaces
+      | selectattr('iface_name', 'equalto', item.iface_name)
+      | map(attribute='peering_ip')
+      | first),
+      (hostvars[peer].wg_ifaces
+      | selectattr('iface_name', 'equalto', item.iface_name)
+      | map(attribute='peering_port')
+      | first)
+    ] | join(':')
+}}
+
+{% endfor %}
