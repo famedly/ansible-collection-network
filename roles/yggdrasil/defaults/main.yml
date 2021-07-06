@@ -3,17 +3,14 @@
 yggdrasil_config_path: /etc/yggdrasil.conf
 yggdrasil_config_listen_address: "[::]:61216"
 yggdrasil_admin_listen_address: "unix:///var/run/yggdrasil.sock"
-yggdrasil_extra_peers: []
+yggdrasil_extra_peers: {}
 yggdrasil_ansible_peers: []
-yggdrasil_interfaces: []
-yggdrasil_multicast_interfaces: [ ".*" ]
+yggdrasil_multicast_interfaces:
+  - regex: ".*"
+    beacon: true
+    listen: true
+    port: 0
 yggdrasil_limit_incoming_connections: true
-yggdrasil_sfw_enable: false
-yggdrasil_sfw_allow_direct: true
-yggdrasil_sfw_allow_remote: true
-yggdrasil_sfw_allow_outbound: true
-yggdrasil_sfw_ansible_whitelist: []
-yggdrasil_sfw_ansible_blacklist: []
 yggdrasil_node_name: "{{ inventory_hostname }}"
 yggdrasil_node_info_privacy: false
 yggdrasil_node_info:

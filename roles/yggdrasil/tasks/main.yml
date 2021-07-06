@@ -1,4 +1,5 @@
 ---
+- import_tasks: check.yml
 - import_tasks: install.yml
   tags: ['prepare', 'prepare-yggdrasil']
 
