@@ -3,6 +3,10 @@ tls:
   options:
     lax:
       preferServerCipherSuites: true
+    nosni:
+      minVersion: "VersionTLS12"
+      sniStrict: false
+      preferServerCipherSuites: true
     default:
       minVersion: "VersionTLS12"
       sniStrict: true
