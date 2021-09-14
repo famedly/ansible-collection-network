@@ -1,4 +1,4 @@
-traefik_version: "2.4"
+traefik_version: "2.5.2"
 traefik_base_path: /opt/traefik
 traefik_log_level: ERROR
 traefik_enable_docker: true
