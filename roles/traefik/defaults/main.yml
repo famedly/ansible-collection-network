@@ -9,6 +9,8 @@ traefik_enable_api_debug: false
 traefik_enable_api_authentication: false
 traefik_enable_prometheus: true
 traefik_enable_access_log: false
+traefik_enable_https_redirect: true
+traefik_enable_metrics: true
 traefik_api_entrypoint: web-secure
 traefik_container_name: traefik
 #traefik_container_networks:
@@ -56,11 +58,13 @@ traefik_metrics_rule: "Host(`{{ traefik_api_host }}`) && Path(`/metrics`)"
 traefik_metrics_enable_tls: false
 
 traefik_dynamic_extra_configs: []
-traefik_dynamic_configs_base:
-  - api-router
-  - metrics-router
-  - https-redirect
-  - tls
+traefik_dynamic_configs_base: |
+  {%- set config = [] -%}
+  {%- do config.append("api-router") if traefik_enable_api -%}
+  {%- do config.append("metrics-router") if traefik_enable_metrics -%}
+  {%- do config.append("https-redirect") if traefik_enable_https_redirect -%}
+  {%- do config.append("tls") -%}
+  {{ config }}
 
 traefik_container_image_ref: "{{ traefik_container_image_name }}:{{ traefik_container_image_tag }}"
 traefik_container_image_name: docker.io/traefik
