@@ -22,6 +22,8 @@ This requires docker to be already installed.
 | `traefik_api_host`                   | (V)Host for the api             |
 | `traefik_version`                    | traefik version                 |
 | `traefik_cert_resolvers`             | Configures the certificate resolvers traefik uses |
+| `traefik_skip_ssl_verify`            | Allow traefik to skip SSL verification            |
+| `traefik_trusted_root_cas`           | A list of CA files to trust                       |
 
 ## Usage
 

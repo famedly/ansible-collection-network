@@ -59,3 +59,14 @@ log:
 {% if traefik_enable_access_log %}
 accessLog: {}
 {% endif %}
+
+{% if traefik_skip_ssl_verify is defined or traefik_trusted_root_cas is defined %}
+serversTransport:
+  insecureSkipVerify: {{ 'true' if traefik_skip_ssl_verify|default(False) else 'false' }}
+  {% if traefik_trusted_root_cas | default([]) | length > 0 -%}
+  rootCAs:
+    {% for ca in traefik_trusted_root_cas|default([]) %}
+    - {{ ca }}
+    {% endfor %}
+  {%- endif %}
+{% endif %}
