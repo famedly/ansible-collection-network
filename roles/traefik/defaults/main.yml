@@ -1,5 +1,14 @@
+---
+
 traefik_version: "2.5.2"
+traefik_user: traefik
 traefik_base_path: /opt/traefik
+traefik_base_path_owner: "{{ traefik_user }}"
+traefik_base_path_group: "{{ traefik_user }}"
+traefik_base_path_mode: "0750"
+
+traefik_dyn_config_path: "{{ traefik_base_path }}/config.d"
+
 traefik_log_level: ERROR
 traefik_enable_docker: true
 traefik_enable_api: true
@@ -74,6 +83,9 @@ traefik_container_pull: true
 
 traefik_manual_tls_management_enabled: false
 traefik_cert_path: "{{ traefik_base_path }}/certs"
+traefik_cert_path_owner: "{{ traefik_user }}"
+traefik_cert_path_group: "{{ traefik_user }}"
+traefik_cert_path_mode: "0750"
 # Expects objects with the key "name", "fullchain" and "privkey"
 traefik_certs_to_deploy: []
 # Expects objects with a "fullchain" and "privkey" field
