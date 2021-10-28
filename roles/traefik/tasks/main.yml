@@ -77,6 +77,10 @@
     force_source: "{{ traefik_container_pull }}"
     source: pull
     state: present
+  when: traefik_container_image_pulled
+  until: traefik_container_image_pulled is success
+  retries: 10
+  delay: 5
   tags: ['prepare', 'prepare-traefik']
 
 - name: Ensure traefik container is running
