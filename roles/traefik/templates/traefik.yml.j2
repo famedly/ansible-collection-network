@@ -1,6 +1,14 @@
 #jinja2: lstrip_blocks: "True", trim_blocks: "True"
+{% if traefik_enable_http3 %}
+experimental:
+  http3: true
+{% endif %}
+
 entryPoints:
 {% for entrypoint in traefik_entrypoints %}
+  {% if traefik_enable_http3 and entrypoint.name == 'web-secure' %}
+    {% do entrypoint.config.update({'http3': {}}) %}
+  {% endif %}
   {{ entrypoint.name }}: {{ entrypoint.config | tojson }}
 {% endfor %}
 

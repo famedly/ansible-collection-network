@@ -10,6 +10,7 @@ traefik_base_path_mode: "0750"
 traefik_dyn_config_path: "{{ traefik_base_path }}/config.d"
 
 traefik_log_level: ERROR
+traefik_enable_http3: false
 traefik_enable_docker: true
 traefik_enable_api: true
 traefik_enable_api_tls: true
