@@ -82,6 +82,14 @@ The certificates are deployed to `traefik_cert_path`, which is `/opt/traefik/cer
 
 If the certificates are already on the target machine, you can specify them directly in `traefik_certs_to_load`, as objects with the keys `fullchain` and `privkey` (which are paths to the files on the target machine).
 
+#### Default certificate
+
+If traefik gets a request without or with an invalid SNI header, it can serve a default certificate when using manual cert management.
+
+To configure this, set `traefik_serve_default_cert` to `true` and the first certificate in `traefik_certs_to_load` will be served. If this list empty, the first certificate from `traefik_certs_to_deploy` will be served.
+
+You can also override the `traefik_default_cert_privkey_path` and `traefik_default_cert_fullchain_path` to chose the certificate to serve as default.
+
 ## License
 
 AGPLv3

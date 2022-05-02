@@ -25,6 +25,13 @@ tls:
     - certFile: {{ cert.fullchain }}
       keyFile: {{ cert.privkey }}
 {% endfor %}
+{% if traefik_serve_default_cert %}
+  stores:
+    default:
+      defaultCertificate:
+        certFile: {{ traefik_default_cert_fullchain_path }}
+        keyFile: {{ traefik_default_cert_privkey_path }}
+{% endif %}
 {% endif %}
 
 http:
