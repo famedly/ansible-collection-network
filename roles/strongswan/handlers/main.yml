@@ -1,0 +1,19 @@
+---
+
+- name: Ensure ipsec.service is restarted
+  systemd:
+    unit: ipsec.service
+    state: restarted
+  listen: restart-ipsec-service
+
+- name: Update IPSec configuration
+  command: "ipsec update"
+  listen: update-ipsec-configuration
+
+- name: Restart IPSec
+  command: echo "call 'ipsec restart <starter options>' where starter ops are to be determined"
+  listen: restart-ipsec-connection
+
+- name: Reload /etc/sysctl.conf
+  command: sysctl -p
+  listen: reload-sysctl-configuration

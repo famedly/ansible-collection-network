@@ -1,0 +1,4 @@
+---
+
+ipsec_address_families:
+  - "v4"

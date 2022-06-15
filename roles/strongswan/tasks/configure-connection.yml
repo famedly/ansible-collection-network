@@ -1,0 +1,61 @@
+---
+
+- name: Template connection settings for {{ conn.name }}
+  become: true
+  copy:
+    dest: "{{ ipsec_connection_secrets_file }}"
+    mode: "0644"
+    content: |
+      {{ conn.local.outside_address }} {{ conn.remote.outside_address }} : PSK "{{ conn.auth_secret }}"
+  when: conn.auth_by in ['psk', 'secret']
+  notify: update-ipsec-configuration
+
+
+- name: Template connection settings for {{ conn.name }}
+  become: true
+  copy:
+    dest: "{{ ipsec_connection_config_file }}"
+    mode: "0644"
+    content: |
+      conn {{ conn.name }}
+      	authby={{ 'secret' if conn.auth_by in ['secret', 'psk'] else conn.auth_by }}
+      	auto=start
+      	type=tunnel
+      	rekey=yes
+      	# Network config
+      	left={{ conn.local.outside_address }}
+      	leftsubnet={{ conn.local.allowed_networks | join(',') }}
+      	right={{ conn.remote.outside_address }}
+      	rightsubnet={{ conn.remote.allowed_networks | join(',') }}
+      	# Key management ("Phase 1")
+      	keyexchange=ikev2
+      	ike=aes256-sha256-ecp384
+      	ikelifetime={{ (24 * 60 * 60) | int }}s
+      	dpdaction=clear
+      	dpddelay=30
+      	# ESP ("Phase 2")
+        esp=aes256-sha256-ecp256,aes256-sha256-ecp384,aes256-sha256-ecp521
+      	lifetime={{ conn.lifetime | default(3600) }}
+      	margintime=9m
+  notify: update-ipsec-configuration
+
+- name: Ensure connection '{{ conn.name }}' is included in IPsec configuration
+  lineinfile:
+    dest: /etc/ipsec.conf
+    line: "include {{ ipsec_connection_config_file }}"
+  notify: update-ipsec-configuration
+
+- name: Ensure secret '{{ conn.name }}' is included in IPsec configuration
+  lineinfile:
+    dest: /etc/ipsec.secrets
+    line: "include {{ ipsec_connection_secrets_file }}"
+  notify: update-ipsec-configuration
+
+#- name: Get running interface configuration
+#  cmd: "ip -json -brief address show {{ conn.interface }}"
+#  register: "{{ iproute_current_iface | from_json }}"
+
+#- name: Set address on outbound interface
+#  cmd: "ip address add {{ conn.local.outside_address }} dev {{ conn.interface}}"
+#  when: iproute_current_iface.addr_info
+  
