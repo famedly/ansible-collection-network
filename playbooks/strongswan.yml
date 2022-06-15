@@ -1,0 +1,29 @@
+---
+
+- name: Install and configure StrongSwan for IPsec tunneling
+  hosts: [ strongswan ]
+  gather_facts: true
+  become: true
+  become_user: root
+  pre_tasks: []
+  collections:
+    - famedly.network
+
+  roles:
+    - role: strongswan
+      vars:
+        ipsec_connections:
+        - name: disConnect-networks-inc
+          local:
+            outside_address: "192.168.64.3/24"
+            inside_address: "10.0.0.3/24"
+            allowed_networks:
+              - "10.0.0.0/24"
+          remote:
+            outside_address: "192.168.64.4/24"
+            inside_address: "10.0.0.4/24"
+            allowed_networks:
+              - "10.0.0.0/24"
+          auth_by: psk
+          auth_secret: "bottom secret"
+          interface: enp0s6
