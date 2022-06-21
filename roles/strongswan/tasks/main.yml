@@ -10,14 +10,15 @@
   delay: 2
   notify: restart-ipsec-service
 
-#- name: Enable IPv4 forwarding
-#  ansible.builtin.blockinfile:
-#    dest: /etc/sysctl.conf
-#    block: |
-#      net.ipv4.ip_forward = 1
-#      net.ipv4.conf.all.accept_redirects = 0
-#      net.ipv4.conf.all.send_redirects = 0
-#  notify: reload-sysctl-configuration
+- name: Enable IPv4 forwarding
+  ansible.builtin.blockinfile:
+    dest: /etc/sysctl.conf
+    block: |
+      net.ipv4.ip_forward = 1
+      net.ipv4.conf.all.accept_redirects = 0
+      net.ipv4.conf.all.send_redirects = 0
+  notify: reload-sysctl-configuration
+  when: '"v4" in ipsec_address_families'
 
 - name: Enable IPv6 forwarding
   ansible.builtin.blockinfile:
@@ -25,6 +26,7 @@
     block: |
       net.ipv6.conf.all.forwarding = 1
   notify: reload-sysctl-configuration
+  when: '"v6" in ipsec_address_families'
 
 - name: Set up ipsec connection
   include_tasks:
