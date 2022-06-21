@@ -28,9 +28,9 @@
   notify: reload-sysctl-configuration
   when: '"v6" in ipsec_address_families'
 
-- name: Set up ipsec connection
+- name: Set up ipsec starter connection
   include_tasks:
-    file: configure-connection.yml
+    file: configure-starter.yml
     apply:
       vars:
         ipsec_connection_config_file: "/etc/ipsec.d/{{ conn.name }}.conf"
@@ -38,4 +38,5 @@
   loop: "{{ ipsec_connections }}"
   loop_control:
     loop_var: conn
-    label: "{{ conn.name }} ({{ conn.local.outside_address }} <-> {{ conn.remote.outside_address }})"
+    label: "{{ conn.name }} ({{ conn.local_outside_address }} <-> {{ conn.remote_outside_address }})"
+  when: strongswan_deployment_mode == "starter"

@@ -1,0 +1,57 @@
+---
+
+- name: Template connection settings for {{ conn.name }}
+  become: true
+  copy:
+    dest: "{{ ipsec_connection_config_file }}"
+    mode: "0644"
+    content: |
+      conn {{ conn.name }}
+      	authby={{ 'secret' if conn.ike.auth in ['secret', 'psk'] else conn.ike.auth }}
+      	auto={{ child.start_action | default( ipsec_conn_defaults.children.start_action ) }}
+      	type=tunnel
+      	rekey=yes
+      	# Network config
+      	left={{ conn.local_outside_address | ansible.utils.ipaddr('address') }}
+      	leftsubnet={{ conn.child[0].local_allowed_networks | reject('match', '^$') | join(',') }}
+      	right={{ conn.remote_outside_address | ansible.utils.ipaddr('address') }}
+      	rightsubnet={{ conn.child[0].remote_allowed_networks | reject('match', '^$') | join(',') }}
+      	# Key management ("Phase 1")
+      	keyexchange={{ version_to_ike_version[conn.ike.version | default(2) ] }}
+      	ike={{ conn.ike.proposals | default( ipsec_conn_defaults.ike.proposals ) | reject('match', '^$') | join(',') }}
+      	ikelifetime={{ conn.ike.rekey_time | default( ipsec_conn_defaults.ike.rekey_time ) }}
+      	dpdaction={{ child.dpd_action | default( ipsec_conn_defaults.children.dpd_action ) }}
+      	dpddelay=30
+      	dpdtimeout=0
+      	# ESP ("Phase 2")
+      	esp={{ child.esp_proposals | default( ipsec_conn_defaults.children.esp_proposals ) | reject('match', '^$') | join(',') }}
+      	lifetime={{ conn.lifetime | default(3600) }}
+      	margintime=9m
+  notify: update-ipsec-configuration
+
+- name: Template connection settings for {{ conn.name }}
+  become: true
+  copy:
+    dest: "{{ ipsec_connection_secrets_file }}"
+    mode: "0644"
+    content: |
+      {{ conn.local_outside_address | ansible.utils.ipaddr('address') }} {{ conn.remote_outside_address | ansible.utils.ipaddr('address') }} : PSK "{{ conn.ike.secret }}"
+  when: conn.ike.auth in ['psk', 'secret']
+  notify: update-ipsec-configuration
+
+- name: Ensure connection '{{ conn.name }}' is included in IPsec configuration
+  lineinfile:
+    dest: /etc/ipsec.conf
+    line: "include {{ ipsec_connection_config_file }}"
+  notify: update-ipsec-configuration
+
+- name: Ensure secret '{{ conn.name }}' is included in IPsec configuration
+  lineinfile:
+    dest: /etc/ipsec.secrets
+    line: "include {{ ipsec_connection_secrets_file }}"
+  notify: update-ipsec-configuration
+
+- name: Ensure ipsec.service is started
+  systemd:
+    unit: ipsec.service
+    state: started
