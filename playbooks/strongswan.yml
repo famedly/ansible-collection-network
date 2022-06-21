@@ -12,18 +12,22 @@
   roles:
     - role: strongswan
       vars:
+        strongswan_deployment_mode: "starter"
         ipsec_connections:
-        - name: disConnect-networks-inc
-          local:
-            outside_address: "192.168.64.3/24"
-            inside_address: "10.0.0.3/24"
-            allowed_networks:
-              - "10.0.0.0/24"
-          remote:
-            outside_address: "192.168.64.4/24"
-            inside_address: "10.0.0.4/24"
-            allowed_networks:
-              - "10.0.0.0/24"
-          auth_by: psk
-          auth_secret: "bottom secret"
-          interface: enp0s6
+        - name: test
+          ike:
+            #  rekey_time: 15m
+            auth: "secret"
+            version: 2
+            secret: "bottom secret"
+          local_outside_address: "192.168.64.6/24"
+          local_inside_address: "10.0.0.6/24"
+          remote_outside_address: "192.168.64.5/24"
+          remote_inside_address: "10.0.0.5/24"
+          child:
+            - 1:
+              #  life_time: 5m
+              remote_allowed_networks:
+                - "10.0.0.0/24"
+              local_allowed_networks:
+                - "10.0.0.0/24"
