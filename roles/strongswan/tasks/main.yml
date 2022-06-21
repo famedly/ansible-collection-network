@@ -2,9 +2,7 @@
 
 - name: Install strongswan
   apt:
-    name:
-      - strongswan
-      - libstrongswan-standard-plugins
+    name: "{{ strongswan_package_list }}"
     cache_valid_time: 86400
   register: task_result
   until: task_result is success

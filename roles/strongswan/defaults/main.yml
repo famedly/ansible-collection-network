@@ -2,3 +2,15 @@
 
 ipsec_address_families:
   - "v4"
+
+strongswan_package_list: "{{ strongswan_package_list_starter if strongswan_deployment_mode == 'starter' else strongswan_package_list_swanctl }}"
+
+strongswan_package_list_starter:
+  - strongswan-starter
+  - strongswan-charon
+  - libstrongswan-standard-plugins
+
+strongswan_package_list_swanctl:
+  - strongswan-swanctl
+  - charon-systemd
+  - libstrongswan-standard-plugins
