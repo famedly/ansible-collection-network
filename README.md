@@ -18,7 +18,8 @@ yggdrasil and wireguard as VPN/mesh-networking software or a reverse-proxy like 
 
 ## License
 
-AGPLv3
+All roles excpet systemd-networkd are licenced AGPLv3.
+The systemd-networkd role is a fork from [aruhier](https://github.com/aruhier/ansible-role-systemd-networkd) and therefor licensed under the BSD-2-Clause license.
 
 ## Author Information
 
