@@ -8,6 +8,7 @@
   until: task_result is success
   retries: 3
   delay: 2
+  when: ansible_os_family == "Debian"
   notify: restart-ipsec-service
 
 - name: Enable IPv4 forwarding
