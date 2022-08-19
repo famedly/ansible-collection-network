@@ -94,3 +94,77 @@ traefik_certs_to_load: []
 traefik_serve_default_cert: false
 traefik_default_cert_privkey_path: "{{ traefik_certs_to_load[0].privkey }}"
 traefik_default_cert_fullchain_path: "{{ traefik_certs_to_load[0].fullchain }}"
+
+# Build traefik tls config file
+traefik_config_tls_defaults: >-
+  {{ {} | combine([
+    traefik_config_tls_default_lax,
+    traefik_config_tls_default_nosni,
+    traefik_config_tls_default,
+    traefik_config_tls_default_strict,
+  ]) | combine(traefik_extra_tls_configs|default([])) }}
+
+traefik_config_tls_certificates:
+  certificates: "
+    {%- set cert_list = [] -%}
+    {%- for cert in traefik_certs_to_load -%}
+    {%- do cert_list.append({'certFile': cert.fullchain, 'keyFile': cert.privkey }) -%}
+    {%- endfor -%}
+    {{ cert_list }}"
+
+traefik_config_tls: >-
+  {{ traefik_config_tls_options
+  | combine(({'tls': traefik_config_tls_store_default_certificate})
+    if traefik_manual_tls_management_enabled
+      and traefik_serve_default_cert else {}, recursive=true)
+  | combine(({'tls': traefik_config_tls_certificates})
+    if traefik_manual_tls_management_enabled else {}, recursive=true)
+  | combine(traefik_config_tls_http_hsts_middleware) }}
+
+traefik_config_tls_options:
+  tls:
+    options: "{{ traefik_config_tls_defaults }}"
+
+traefik_config_tls_store_default_certificate:
+  stores:
+    default:
+      defaultCertificate:
+        certFile: "{{ traefik_default_cert_fullchain_path }}"
+        keyFile: "{{ traefik_default_cert_privkey_path }}"
+
+traefik_config_tls_http_hsts_middleware:
+  http:
+    middlewares:
+      hsts:
+        headers:
+          stsPreload: true
+          stsSeconds: 31536000
+          stsIncludeSubdomains: true
+
+traefik_config_tls_default_strictsni: true
+
+traefik_config_tls_default_lax:
+  lax:
+    preferServerCipherSuites: true
+
+traefik_config_tls_default_nosni:
+  nosni:
+    minVersion: "VersionTLS12"
+    sniStrict: false
+    preferServerCipherSuites: true
+
+traefik_config_tls_default:
+  default:
+    minVersion: "VersionTLS12"
+    sniStrict: "{{ traefik_config_tls_default_strictsni }}"
+    preferServerCipherSuites: true
+    cipherSuites:
+      - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+      - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+      - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+
+traefik_config_tls_default_strict:
+  strict:
+    minVersion: "VersionTLS13"
+    sniStrict: true
+    preferServerCipherSuites: true

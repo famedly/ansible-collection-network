@@ -4,13 +4,14 @@ experimental:
   http3: true
 {% endif %}
 
-entryPoints:
-{% for entrypoint in traefik_entrypoints %}
-  {% if traefik_enable_http3 and entrypoint.name == 'web-secure' %}
-    {% do entrypoint.config.update({'http3': {}}) %}
-  {% endif %}
-  {{ entrypoint.name }}: {{ entrypoint.config | tojson }}
-{% endfor %}
+{%- set entrypoints = {} -%}
+{%- for entrypoint in traefik_entrypoints -%}
+  {%- if traefik_enable_http3 and entrypoint.name == 'web-secure' -%}
+    {%- do entrypoint.config.update({'http3': {}}) -%}
+  {%- endif -%}
+  {%- do entrypoints.update({entrypoint.name: entrypoint.config }) -%}
+{%- endfor -%}
+{{ ({'entryPoints': entrypoints }) | to_nice_yaml(indent=2) }}
 
 ping:
   entryPoint: "ping"
