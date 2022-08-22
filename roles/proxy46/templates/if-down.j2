@@ -1,0 +1,4 @@
+#!/bin/sh
+if [ "$IF_ADDRESS" = "{{ famedly_server_host_ipv6 }}" ]; then
+ip -6 route del local {{ proxy46_prefix }}/96 dev lo
+fi

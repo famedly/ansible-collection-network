@@ -1,0 +1,70 @@
+---
+- name: Create user
+  become: true
+  ansible.builtin.user:
+    name: "{{ proxy46_user }}"
+    append: true
+  register: proxy46_user_info
+  tags: ['prepare', 'prepare-proxy46']
+
+- name: Create proxy46 base directory
+  become: true
+  ansible.builtin.file:
+    path: "{{ proxy46_base_path }}"
+    state: directory
+    owner: "{{ proxy46_base_path_owner | default(proxy46_user_info.uid) }}"
+    group: "{{ proxy46_base_path_group | default(proxy46_user_info.group) }}"
+    mode: "{{ proxy46_base_path_mode }}"
+  tags: ['prepare', 'prepare-proxy46']
+
+- name: Template config file
+  become: true
+  ansible.builtin.template:
+    src: nginx.conf.j2
+    dest: "{{ proxy46_base_path }}/nginx.conf"
+    mode: 0644
+  notify: restart-proxy46
+  tags: ['deploy', 'deploy-proxy46']
+
+- name: Template if-down
+  become: true
+  ansible.builtin.template:
+    src: if-down.j2
+    dest: /etc/network/if-down.d/proxy46
+    mode: 0755
+  notify: restart-networking
+  tags: ['deploy', 'deploy-proxy46']
+
+- name: Template if-up
+  become: true
+  ansible.builtin.template:
+    src: if-up.j2
+    dest: /etc/network/if-up.d/proxy46
+    mode: 0755
+  notify: restart-networking
+  tags: ['deploy', 'deploy-proxy46']
+
+- name: Ensure proxy46 container image is present
+  become: true
+  community.docker.docker_image:
+    name: "{{ proxy46_container_image_ref }}"
+    force_source: "{{ proxy46_container_pull }}"
+    source: pull
+    state: present
+  register: proxy46_container_image_pulled
+  until: proxy46_container_image_pulled is success
+  retries: 10
+  delay: 5
+  tags: ['prepare', 'prepare-proxy46']
+
+- name: Ensure proxy46 container is running
+  become: true
+  community.docker.docker_container:
+    name: "{{ proxy46_container_name }}"
+    image: '{{ proxy46_container_image_ref }}'
+    networks: "{{ proxy46_container_networks | default(omit) }}"
+    network_mode: host
+    volumes: "{{ proxy46_container_volumes }}"
+    restart_policy: unless-stopped
+    state: started
+  tags: ['deploy', 'deploy-proxy46']

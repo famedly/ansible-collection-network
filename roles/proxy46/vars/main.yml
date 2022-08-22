@@ -1,0 +1,4 @@
+---
+proxy46_container_volumes_base:
+  - "{{ proxy46_base_path }}/:/etc/nginx/"
+proxy46_container_volumes: "{{ proxy46_container_volumes_base + proxy46_container_extra_volumes | default([]) }}"

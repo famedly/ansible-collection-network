@@ -1,0 +1,17 @@
+---
+galaxy_info:
+  author: Lukas Lihotzki <l.lihotzki@famedly.com>
+  description: Deploys a containerized proxy46 instance
+
+  license: AGPL-3.0-only
+
+  min_ansible_version: "2.5"
+
+  platforms:
+    - name: Debian
+      versions:
+        - bullseye
+
+  galaxy_tags: []
+
+dependencies: []

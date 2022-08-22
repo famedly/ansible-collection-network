@@ -1,0 +1,15 @@
+---
+- name: Restart networking
+  become: true
+  ansible.builtin.systemd:
+    state: restarted
+    name: networking
+  listen: restart-networking
+
+- name: Restart proxy46
+  become: true
+  community.docker.docker_container:
+    name: "{{ proxy46_container_name }}"
+    state: started
+    restart: true
+  listen: restart-proxy46
