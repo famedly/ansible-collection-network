@@ -22,7 +22,7 @@ There are 2 variables that need to exist for the crypto part of yggdrasil:
  - `yggdrasil_public_key`
  - `yggdrasil_private_key`
 
-You can generate keys with [yggdrasil-keygen](https://gitlab.com/famedly/company/devops/tools/yggdrasil-keygen) for example, or you could use the key generation provided by upstream alternatively. In the end, the only relevant thing is that those two keys are present in the variables of the host you are deployng.
+You can generate keys with [yggdrasil-keygen](https://gitlab.com/famedly/infra/tools/yggdrasil-keygen) for example, or you could use the key generation provided by upstream alternatively. In the end, the only relevant thing is that those two keys are present in the variables of the host you are deployng.
 
 ### Peers
 There's two options for adding peers,
