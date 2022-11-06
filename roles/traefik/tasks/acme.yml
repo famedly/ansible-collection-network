@@ -81,7 +81,7 @@
           body:
             status: valid
             contact: "{{ resolver.acme.account.contact }}"
-          uri: "{{ resolver.acme.account.uri }}"
+        uri: "{{ resolver.acme.account.uri }}"
   loop: "{{ traefik_cert_resolvers | selectattr('acme.account', 'defined')}}"
   loop_control:
     loop_var: resolver
