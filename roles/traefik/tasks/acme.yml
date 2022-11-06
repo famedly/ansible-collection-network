@@ -95,7 +95,7 @@
 
 - name: Write acme.json to host
   copy:
-    content: "{{ traefik_acme_config | to_nice_json(indent=4) }}"
+    content: "{{ traefik_acme_config | to_nice_json(indent=2) }}"
     dest: "{{ traefik_base_path }}/acme.json"
     owner: traefik
     group: traefik
