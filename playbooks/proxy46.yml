@@ -1,0 +1,5 @@
+---
+- name: Deploy SNI based IPv4-to-IPv6 proxy
+  hosts: "{{ proxy46_hosts | default('proxy46') }}"
+  roles:
+    - famedly.network.proxy46
