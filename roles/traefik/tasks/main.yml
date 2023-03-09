@@ -74,7 +74,7 @@
 
 - name: Ensure traefik container image is present
   docker_image:
-    name: "{{ traefik_container_image_ref }}"
+    name: "{{ traefik_container_image_reference }}"
     force_source: "{{ traefik_container_pull }}"
     source: pull
     state: present
@@ -87,7 +87,7 @@
 - name: Ensure traefik container is running
   docker_container:
     name: "{{ traefik_container_name }}"
-    image: '{{ traefik_container_image_ref }}'
+    image: '{{ traefik_container_image_reference }}'
     networks: "{{ traefik_container_networks | default(omit) }}"
     etc_hosts: "{{ traefik_container_etc_hosts }}"
     network_mode: "{{ traefik_container_network_mode }}"

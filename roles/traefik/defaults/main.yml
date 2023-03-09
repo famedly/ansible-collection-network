@@ -76,9 +76,25 @@ traefik_dynamic_configs_base: |
   {%- do config.append("tls") -%}
   {{ config }}
 
-traefik_container_image_ref: "{{ traefik_container_image_name }}:{{ traefik_container_image_tag }}"
-traefik_container_image_name: docker.io/traefik
-traefik_container_image_tag: "v{{ traefik_version }}"
+traefik_container_image_reference: >-
+  {{
+    traefik_container_image_repository
+    + ':'
+    + traefik_container_image_tag | default('v' + traefik_version)
+  }}
+traefik_container_image_repository: >-
+  {{
+    (
+      container_registries[traefik_container_image_registry]
+      | default(traefik_container_image_registry)
+    )
+    + '/'
+    + traefik_container_image_namespace | default('')
+    + traefik_container_image_name
+  }}
+traefik_container_image_registry: "docker.io"
+traefik_container_image_name: "traefik"
+
 traefik_container_socket: /var/run/docker.sock
 traefik_container_pull: true
 
