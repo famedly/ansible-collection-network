@@ -4,7 +4,7 @@ experimental:
   {% if traefik_enable_http3 %}
   http3: true
   {% endif %}
-  {% if traefik_plugins %}
+  {% if traefik_plugins is defined %}
   plugins:
     {{ traefik_plugins | to_nice_yaml(indent=2) | indent(4, False) }}
   {% endif %}
