@@ -1,7 +1,13 @@
 #jinja2: lstrip_blocks: "True", trim_blocks: "True"
-{% if traefik_enable_http3 %}
+{% if traefik_enable_http3 or traefik_plugins is defined %}
 experimental:
+  {% if traefik_enable_http3 %}
   http3: true
+  {% endif %}
+  {% if traefik_plugins %}
+  plugins:
+    {{ traefik_plugins | to_nice_yaml(indent=2) | indent(4, False) }}
+  {% endif %}
 {% endif %}
 
 {%- set entrypoints = {} -%}

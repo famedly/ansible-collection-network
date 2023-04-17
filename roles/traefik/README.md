@@ -24,6 +24,7 @@ This requires docker to be already installed.
 | `traefik_cert_resolvers`             | Configures the certificate resolvers traefik uses |
 | `traefik_skip_ssl_verify`            | Allow traefik to skip SSL verification            |
 | `traefik_trusted_root_cas`           | A list of CA files to trust                       |
+| `traefik_plugins`                    | A dict of plugins from the catalog to add         |
 
 ## Usage
 
@@ -89,6 +90,17 @@ If traefik gets a request without or with an invalid SNI header, it can serve a 
 To configure this, set `traefik_serve_default_cert` to `true` and the first certificate in `traefik_certs_to_load` will be served. If this list empty, the first certificate from `traefik_certs_to_deploy` will be served.
 
 You can also override the `traefik_default_cert_privkey_path` and `traefik_default_cert_fullchain_path` to chose the certificate to serve as default.
+
+### Plugins
+
+Define plugins to import from the [plugin catalog](https://plugins.traefik.io/plugins) in the `traefik_plugins` dict.
+
+```yaml
+traefik_plugins:
+  plugindemo:
+    moduleName: "github.com/traefik/plugindemo"
+    version: "v0.2.2"
+```
 
 ## License
 
