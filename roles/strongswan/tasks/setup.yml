@@ -1,0 +1,44 @@
+---
+
+- name: Install strongswan
+  apt:
+    name: "{{ strongswan_package_list }}"
+    cache_valid_time: 86400
+  register: task_result
+  until: task_result is success
+  retries: 3
+  delay: 2
+  when: ansible_os_family == "Debian"
+  notify: restart-ipsec-service
+
+- name: Write charon config
+  template:
+    src: templates/swanctl/conf.j2
+    dest: "{{ config_file }}"
+    mode: "0644"
+  become: true
+  vars:
+    data: "{{ config_body }}"
+
+- name: Enable forwarding
+  ansible.builtin.blockinfile:
+    dest: /etc/sysctl.conf
+    block: |
+      net.ipv4.ip_forward = 1
+      net.ipv4.conf.all.accept_redirects = 0
+      net.ipv4.conf.all.send_redirects = 0
+      net.ipv6.conf.all.forwarding = 1
+  notify: reload-sysctl-configuration
+
+- name: Ensure "openmetrics-vici-exporter" container is present
+  community.docker.docker_container:
+    name: "openmetrics-vici-exporter"
+    pull: true
+    read_only: true
+    restart_policy: unless-stopped
+    user: "{{ strongswan_user_res }}"
+    image: "{{ strongswan_openmetrics_vici_exporter_container_image_reference }}"
+    volumes:
+      - "{{ strongswan_charon_vici_socket ~ ':' ~ strongswan_charon_vici_socket ~ ':rw' }}"
+    env: "{{ strongswan_openmetrics_vici_exporter_container_env }}"
+    labels: "{{ strongswan_openmetrics_vici_exporter_container_labels }}"

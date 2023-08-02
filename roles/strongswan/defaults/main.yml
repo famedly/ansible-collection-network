@@ -1,0 +1,34 @@
+---
+
+strongswan_package_list:
+  - strongswan-swanctl
+  - charon-systemd
+  - libstrongswan-standard-plugins
+
+#strongswan_swanctl_default_connection_name: "default-connection"
+#strongswan_swanctl_default_child_name: "default-child"
+strongswan_swanctl_default_certificate_file: "{{ '/opt/lego/certificates/' ~ ansible_hostname ~ '.pem' }}"
+
+strongswan_swanctl_config_dir: "/etc/swanctl/conf.d"
+strongswan_charon_config_file: "/etc/strongswan.conf"
+
+strongswan_charon_listen_interfaces: ["eth0"]
+strongswan_charon_vici_socket: "/var/run/charon.vici"
+
+strongswan_charon_config:
+  charon:
+    plugins:
+      bypass-lan:
+        interfaces_use: "{{ strongswan_charon_listen_interface }}"
+      vici:
+        socket: "{{ strongswan_charon_vici_socket }}"
+      swanctl:
+        socket: "{{ strongswan_charon_vici_socket }}"
+
+strongswan_swanctl_default_connection:
+  "{{ strongswan_default_connection_name }}":
+    local:
+      auth: pubkey
+      id: "{{ 'CN=' ~ ansible_hostname }}"
+      certs:
+        - "{{ strongswan_swanctl_default_certificate_file }}"

@@ -1,0 +1,17 @@
+---
+
+- name: Install and configure StrongSwan for IPsec tunneling
+  hosts: [ strongswan ]
+  gather_facts: true
+  become: true
+  become_user: root
+  pre_tasks: []
+  collections:
+    - famedly.network
+
+  roles:
+    - role: strongswan
+      vars:
+        strongswan_swanctl_configs:
+          - "{{ famedly_ipsec_config_xtention }}"
+          - ...

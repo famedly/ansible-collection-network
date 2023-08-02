@@ -1,0 +1,46 @@
+
+{% macro render_key(item) -%}
+    {% for (key, sub_item) in item %}
+        {% set (sub_item_key, sub_item_value) = sub_item %}
+        {% if sub_item_key == "__extend__" %}
+            {% set defaults = sub_item_value | join(', ') %}
+        {% endif %}
+        {{ [ key, ":" defaults, "{" ] | join(" ") }}
+    {% endfor %}
+{% endmacro -%}
+
+{% macro recurse(item,depth) -%}
+    {% for key, value in item %}
+        {% if key != "__extend__" %}
+       {# Check criterea for dict #}
+        {% if (
+            value is itterable and
+            value is sequence and
+            value is mapping and
+            value is not string ) %}
+            {% filter indent ( width= ( 2* depth if depth > 0 else 0 ) ) %}
+                {# Write key and braces, keep recursing #}
+                {% render_key(item) %}
+                {% recurse(item,(depth + 1)) %}
+                {{ "}" }}
+            {% endfliter %}
+
+        {# Check criterea for list #}
+        {% else if (
+            value is itterable and
+            value is sequence and
+            value is not mapping and
+            value is not string ) %}
+            {# swanctl wants lists comma delimited as one value #}
+            {% set value = value | join(',') %}
+        {% endif %}
+
+        {# Write key value pair with corrent indentation #}
+        {% filter indent( width = 2*depth )%}
+            {{ key ~ " = " ~ value }}
+        {% endfilter%}
+        {% endif %}
+    {% endfor%}
+{% endmacro -%}
+
+{% recurse(data,0) %}

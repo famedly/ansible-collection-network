@@ -1,0 +1,32 @@
+---
+strongswan_openmetrics_vici_exporter_container_image_reference: >-
+  {{
+    strongswan_openmetrics_vici_exporter_container_image_repository
+    ~ ':'
+    ~ strongswan_openmetrics_vici_exporter_container_image_tag | default('v' ~ strongswan_openmetrics_vici_exporter_version)
+  }}
+
+strongswan_openmetrics_vici_exporter_container_image_repository: >-
+  {{
+    (
+      container_registries[strongswan_openmetrics_vici_exporter_container_image_registry]
+      | default(strongswan_openmetrics_vici_exporter_container_image_registry)
+    )
+    ~ '/'
+    ~ strongswan_openmetrics_vici_exporter_container_image_namespace | default('')
+    ~ strongswan_openmetrics_vici_exporter_container_image_name
+  }}
+
+strongswan_openmetrics_vici_exporter_container_image_registry: "ghcr.io"
+strongswan_openmetrics_vici_exporter_container_image_namespace: "famedly"
+strongswan_openmetrics_vici_exporter_container_image_name: "openmetrics-vici-exporter"
+
+# strongswan_openmetrics_vici_exporter_container_image_tag
+
+strongswan_openmetrics_vici_exporter_container_env:
+  VICI_EXPORTER_VICI_SOCKET: "{{ strongswan_charon_vici_socket }}"
+  VICI_EXPORTER_VICI_INTERVAL: "{{ strongswan_openmetrics_vici_exporter_interval }}"
+  VICI_EXPORTER_SERVER_ADDRESS: 127.0.0.1
+  VICI_EXPORTER_SERVER_PORT: "{{ strongswan_openmetrics_vici_exporter_container_port }}"
+
+strongswan_openmetrics_vici_exporter_container_port: 8000
