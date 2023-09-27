@@ -22,7 +22,7 @@
   ansible.builtin.template:
     src: nginx.conf.j2
     dest: "{{ proxy46_base_path }}/nginx.conf"
-    mode: 0644
+    mode: "0644"
   notify: restart-proxy46
   tags: ['deploy', 'deploy-proxy46']
 
@@ -31,7 +31,7 @@
   ansible.builtin.template:
     src: if-down.j2
     dest: /etc/network/if-down.d/proxy46
-    mode: 0755
+    mode: "0755"
   notify: restart-networking
   tags: ['deploy', 'deploy-proxy46']
 
@@ -40,7 +40,7 @@
   ansible.builtin.template:
     src: if-up.j2
     dest: /etc/network/if-up.d/proxy46
-    mode: 0755
+    mode: "0755"
   notify: restart-networking
   tags: ['deploy', 'deploy-proxy46']
 
