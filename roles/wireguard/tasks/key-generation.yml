@@ -1,64 +1,67 @@
 ---
 
 - name: Check if private key for {{ item.iface_name }} is already present
-  stat:
+  ansible.builtin.stat:
     path: "{{ wg_privkey_file }}"
   register: wg_generated_privkey_present
 
 - name: Generate private key for {{ item.iface_name }}
-  command: wg genkey
+  ansible.builtin.command: wg genkey
   register: wg_generated_privkey
   when: not wg_generated_privkey_present.stat.exists
+  changed_when: true
 
 - name: Save private key for {{ item.iface_name }}
-  copy:
+  ansible.builtin.copy:
     dest: "{{ wg_privkey_file }}"
     content: "{{ wg_generated_privkey.stdout }}"
-    mode: 0600
+    mode: "0600"
   when: not wg_generated_privkey_present.stat.exists
 
 - name: Load private key from host for {{ item.iface_name }}
+  when: wg_generated_privkey_present.stat.exists
   block:
     - name: Load filecontents of privkey file for {{ item.iface_name }} and register to variable
-      slurp:
+      ansible.builtin.slurp:
         src: "{{ wg_privkey_file }}"
       register: wg_existing_privkey
     - name: Save privkey for {{ item.iface_name }} as fact
-      set_fact:
+      ansible.builtin.set_fact:
         wg_generated_privkey:
           stdout: "{{ wg_existing_privkey['content'] | b64decode }}"
-  when: wg_generated_privkey_present.stat.exists
 
 - name: Set privkey as fact for config templating for {{ item.iface_name }}
-  set_fact:
-    wg_privkeys: "{{ wg_privkeys|default({}) | combine({ item.iface_name: privkey }) }}"
+  ansible.builtin.set_fact:
+    wg_privkeys: "{{ wg_privkeys | default({}) | combine({item.iface_name: privkey}) }}"
   vars:
     privkey: "{{ wg_existing_privkey['content'] | b64decode if wg_generated_privkey_present.stat.exists else wg_generated_privkey.stdout }}"
 
 - name: Check if public key for {{ item.iface_name }} is already present
-  stat:
+  ansible.builtin.stat:
     path: "{{ wg_pubkey_file }}"
   register: wg_generated_pubkey_present
 
 - name: Generate public key for {{ item.iface_name }}
-  shell: echo -n "{{ wg_generated_privkey.stdout }}" | wg pubkey
+  ansible.builtin.shell: |
+    set -o pipefail
+    echo -n "{{ wg_generated_privkey.stdout }}" | wg pubkey
   register: wg_generated_pubkey
   changed_when: false
 
 - name: Save public key for {{ item.iface_name }}
-  copy:
+  ansible.builtin.copy:
     dest: "{{ wg_pubkey_file }}"
     content: "{{ wg_generated_pubkey.stdout }}"
-    mode: 0600
+    mode: "0600"
 
 - name: Load pubkey from host for {{ item.iface_name }}
-  slurp:
+  ansible.builtin.slurp:
     src: "{{ wg_pubkey_file }}"
   register: wg_existing_pubkey
   when: wg_generated_pubkey_present.stat.exists
 
 - name: Set pubkey as fact for config templating for {{ item.iface_name }}
-  set_fact:
-    wg_pubkeys: "{{ wg_pubkeys|default({}) | combine({ item.iface_name: pubkey }) }}"
+  ansible.builtin.set_fact:
+    wg_pubkeys: "{{ wg_pubkeys | default({}) | combine({item.iface_name: pubkey}) }}"
   vars:
     pubkey: "{{ wg_existing_pubkey['content'] | b64decode if wg_generated_pubkey_present.stat.exists else wg_generated_pubkey.stdout }}"
