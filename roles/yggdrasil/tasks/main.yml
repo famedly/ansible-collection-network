@@ -1,7 +1,11 @@
 ---
-- import_tasks: check.yml
-- import_tasks: install.yml
+- name: Import check tasks
+  ansible.builtin.import_tasks: check.yml
+
+- name: Import install tasks
+  ansible.builtin.import_tasks: install.yml
   tags: ['prepare', 'prepare-yggdrasil']
 
-- import_tasks: configure.yml
+- name: Import configuration tasks
+  ansible.builtin.import_tasks: configure.yml
   tags: ['deploy', 'deploy-yggdrasil']

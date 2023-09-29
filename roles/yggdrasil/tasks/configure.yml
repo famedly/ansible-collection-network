@@ -1,3 +1,5 @@
 ---
-- import_tasks: configure/configuration.yml
-- import_tasks: configure/service.yml
+- name: Import configuration
+  ansible.builtin.import_tasks: configure/configuration.yml
+- name: Import service
+  ansible.builtin.import_tasks: configure/service.yml

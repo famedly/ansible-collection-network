@@ -1,15 +1,15 @@
 ---
 # handlers file for yggdrasil
-- name: restart yggdrasil using service
-  service:
+- name: Restart yggdrasil using service
+  ansible.builtin.service:
     name: yggdrasil
     enabled: true
     state: restarted
   when: ansible_lsb.id != "Void"
   listen: restart yggdrasil
 
-- name: restart yggdrasil using runit
-  runit:
+- name: Restart yggdrasil using runit
+  community.general.runit:
     name: yggdrasil
     enabled: true
     state: restarted

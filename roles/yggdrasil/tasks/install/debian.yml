@@ -1,14 +1,14 @@
 ---
-- name: install apt key deps
-  apt:
+- name: Install apt key deps
+  ansible.builtin.apt:
     name: dirmngr
   register: task_result
   until: task_result is success
   retries: 3
   delay: 2
 
-- name: add apt key
-  apt_key:
+- name: Add apt key
+  ansible.builtin.apt_key:
     state: present
     url: https://neilalexander.s3.dualstack.eu-west-2.amazonaws.com/deb/key.txt
     id: 569130E8CA20FBC4CB3FDE555898470A764B32C9
@@ -17,8 +17,8 @@
   retries: 3
   delay: 2
 
-- name: add apt repository
-  apt_repository:
+- name: Add apt repository
+  ansible.builtin.apt_repository:
     repo: deb http://neilalexander.s3.eu-west-2.amazonaws.com/deb/ debian yggdrasil
     state: present
   register: task_result
@@ -26,8 +26,8 @@
   retries: 3
   delay: 2
 
-- name: install yggdrasil
-  apt:
+- name: Install yggdrasil
+  ansible.builtin.apt:
     name: yggdrasil
   register: task_result
   until: task_result is success

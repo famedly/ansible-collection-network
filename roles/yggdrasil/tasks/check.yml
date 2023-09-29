@@ -1,5 +1,5 @@
-- name: "Check that old keys don't exist"
-  fail:
+- name: Check that old keys don't exist
+  ansible.builtin.fail:
     msg: >
       You're still defining keys for an older version of yggdrasil.
       Please update your host vars.
@@ -9,8 +9,8 @@
     or yggdrasil_signing_public_key is defined
     or yggdrasil_signing_private_key is defined
 
-- name: "Check that keys exist"
-  fail:
+- name: Check that keys exist
+  ansible.builtin.fail:
     msg: >
       The keys for yggdrasil are missing. Please generate them and
       put them into `yggdrasil_public_key` and `yggdrasil_private_key`

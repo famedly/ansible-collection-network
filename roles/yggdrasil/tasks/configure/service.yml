@@ -1,6 +1,6 @@
 ---
-- name: start yggdrasil
-  service:
+- name: Start yggdrasil
+  ansible.builtin.service:
     name: yggdrasil
     enabled: true
     state: started
@@ -8,8 +8,8 @@
 
 # This separate entry here is needed because
 # the service module does not support runit
-- name: start yggdrasil
-  runit:
+- name: Start yggdrasil
+  community.general.runit:
     name: yggdrasil
     enabled: true
     state: started
