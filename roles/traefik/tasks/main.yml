@@ -1,15 +1,15 @@
 ---
 
 - name: Create user
-  user:
+  ansible.builtin.user:
     name: "{{ traefik_user }}"
     groups: docker
-    append: yes
+    append: true
   register: traefik_user_info
   tags: ['prepare', 'prepare-traefik']
 
 - name: Create traefik base directory
-  file:
+  ansible.builtin.file:
     path: "{{ traefik_base_path }}"
     state: directory
     owner: "{{ traefik_base_path_owner | default(traefik_user_info.uid) }}"
@@ -18,7 +18,7 @@
   tags: ['prepare', 'prepare-traefik']
 
 - name: Create traefik config directory
-  file:
+  ansible.builtin.file:
     path: "{{ traefik_dyn_config_path }}"
     state: directory
     owner: "{{ traefik_config_path_owner | default(traefik_user_info.uid) }}"
@@ -33,12 +33,12 @@
     password: "{{ traefik_api_admin_password }}"
     owner: "{{ traefik_user_info.uid }}"
     group: "{{ traefik_user_info.group }}"
-    mode: 0600
+    mode: "0600"
   tags: ['prepare', 'prepare-traefik']
   when: traefik_enable_api|bool and traefik_enable_api_authentication|bool
 
 - name: Deploy manually managed certificates
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: manual-cert-management.yml
     apply:
       tags: ['prepare', 'prepare-traefik']
@@ -46,34 +46,35 @@
   tags: ['prepare', 'prepare-traefik']
 
 - name: Setup ACME
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: acme.yml
     apply:
       tags: ['prepare', 'prepare-traefik']
   tags: ['prepare', 'prepare-traefik']
 
 - name: Template config file
-  template:
+  ansible.builtin.template:
     src: traefik.yml.j2
     dest: "{{ traefik_base_path }}/config.yml"
     owner: traefik
     group: traefik
-  notify: restart traefik
+    mode: "0640"
+  notify: Restart traefik
   tags: ['deploy', 'deploy-traefik']
 
 - name: Template dynamic configurations for {{ item }}
-  template:
+  ansible.builtin.template:
     src: "{{ item }}.yml.j2"
     dest: "{{ traefik_dyn_config_path }}/{{ item }}.yml"
     owner: "{{ traefik_user_info.uid }}"
     group: "{{ traefik_user_info.group }}"
-    mode: 0640
+    mode: "0640"
   loop: "{{ traefik_dynamic_configs }}"
-  notify: restart traefik
+  notify: Restart traefik
   tags: ['deploy', 'deploy-traefik']
 
 - name: Ensure traefik container image is present
-  docker_image:
+  community.docker.docker_image:
     name: "{{ traefik_container_image_reference }}"
     force_source: "{{ traefik_container_pull }}"
     source: pull
@@ -85,7 +86,7 @@
   tags: ['prepare', 'prepare-traefik']
 
 - name: Ensure traefik container is running
-  docker_container:
+  community.docker.docker_container:
     name: "{{ traefik_container_name }}"
     image: '{{ traefik_container_image_reference }}'
     networks: "{{ traefik_container_networks | default(omit) }}"

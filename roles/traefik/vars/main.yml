@@ -20,4 +20,4 @@ traefik_container_volumes_base:
   - "{{ traefik_base_path }}/config.yml:/traefik.yml"
   - "{{ traefik_base_path }}/config.d/:{{ traefik_base_path }}/config.d/"
   - "{{ traefik_base_path }}/acme.json:/acme.json"
-traefik_container_volumes: "{{ traefik_container_volumes_base + traefik_container_extra_volumes|default([]) }}"
+traefik_container_volumes: "{{ traefik_container_volumes_base + traefik_container_extra_volumes | default([]) }}"

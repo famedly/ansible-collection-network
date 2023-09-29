@@ -23,7 +23,7 @@ traefik_enable_https_redirect: true
 traefik_enable_metrics: true
 traefik_api_entrypoint: web-secure
 traefik_container_name: traefik
-#traefik_container_networks:
+# traefik_container_networks:
 traefik_container_network_mode: host
 traefik_container_etc_hosts: {}
 traefik_container_ports: []
@@ -121,12 +121,13 @@ traefik_config_tls_defaults: >-
   ]) | combine(traefik_extra_tls_configs|default([])) }}
 
 traefik_config_tls_certificates:
-  certificates: "
+  certificates: >-
     {%- set cert_list = [] -%}
     {%- for cert in traefik_certs_to_load -%}
-    {%- do cert_list.append({'certFile': cert.fullchain, 'keyFile': cert.privkey }) -%}
+    {%- do cert_list.append({'certFile': cert.fullchain, 'keyFile': cert.privkey}) -%}
     {%- endfor -%}
-    {{ cert_list }}"
+    {{ cert_list }}
+
 
 traefik_config_tls: >-
   {{ traefik_config_tls_options

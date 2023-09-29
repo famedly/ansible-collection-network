@@ -1,7 +1,7 @@
 ---
 
 - name: Create traefik cert directory
-  file:
+  ansible.builtin.file:
     path: "{{ traefik_cert_path }}"
     state: directory
     owner: "{{ traefik_cert_path_owner }}"
@@ -9,7 +9,7 @@
     mode: "{{ traefik_cert_path_mode }}"
 
 - name: Deploy certificates
-  include_tasks: deploy-manual-cert.yml
+  ansible.builtin.include_tasks: deploy-manual-cert.yml
   vars:
     fullchain_path: "{{ traefik_cert_path }}/{{ item.name }}-fullchain.pem"
     privkey_path: "{{ traefik_cert_path }}/{{ item.name }}-privkey.pem"
@@ -19,14 +19,14 @@
   loop: "{{ traefik_certs_to_deploy }}"
 
 - name: Map certificates into container
-  set_fact:
+  ansible.builtin.set_fact:
     traefik_container_volumes: >-2
-      {{ traefik_container_volumes + [ cert_mapping ] }}
+      {{ traefik_container_volumes + [cert_mapping] }}
   vars:
     cert_mapping: "{{ traefik_cert_path }}:{{ traefik_cert_path }}:ro"
 
 - name: Template script for execution in manual cert management
-  template:
+  ansible.builtin.template:
     src: post-renewal.sh.j2
     dest: "{{ lego_post_renewal_script }}"
     owner: "{{ traefik_user_info.uid }}"
