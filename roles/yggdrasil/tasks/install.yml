@@ -1,6 +1,6 @@
 ---
 - import_tasks: install/void.yml
-  when: ansible_os_family == "void"
+  when: ansible_os_family == "Void"
 
 - import_tasks: install/fedora.yml
   when: ansible_os_family == "RedHat"
