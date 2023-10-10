@@ -1,0 +1,36 @@
+---
+
+version_to_ike_version:
+  0: ike
+  1: ikev1
+  2: ikev2
+
+ipsec_conn_defaults:
+  managed_by: "swanctl"
+  ike:
+    auth: "secret"
+    rekey_time: 24h
+    version: 2
+    proposals:
+    - aes256-sha256-ecp384
+    - "{{ 'default' if strongswan_deployment_mode != 'starter' }}"
+    secret:
+
+  local:
+    auth: "secret"
+    #auth: "{{ 'secret' if ipsec_conn_defaults.ike.auth in ['secret', 'psk'] else ipsec_conn_defaults.ike.auth }}"
+    # this gives me recursion errors send help!!!
+
+  remote:
+    auth: "secret"
+    #auth: "{{ 'secret' if ipsec_conn_defaults.ike.auth in ['secret', 'psk'] else ipsec_conn_defaults.ike.auth }}"
+
+  children:
+    start_action: start
+    dpd_action: restart
+    esp_proposals:
+    - aes256-sha256-ecp256
+    - aes256-sha256-ecp384
+    - aes256-sha256-ecp521
+    - "{{ 'default' if strongswan_deployment_mode != 'starter' }}"
+    life_time: 1h

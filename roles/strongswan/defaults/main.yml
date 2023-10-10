@@ -1,0 +1,17 @@
+---
+
+strongswan_deployment_mode: "swanctl" # can be either starter (legacy) or swanctl (new)
+ipsec_address_families: # what address families to enable forwarding for, can be either v4 or v6
+  - "v4"
+
+strongswan_package_list: "{{ strongswan_package_list_starter if strongswan_deployment_mode == 'starter' else strongswan_package_list_swanctl }}"
+
+strongswan_package_list_starter:
+  - strongswan-starter
+  - strongswan-charon
+  - libstrongswan-standard-plugins
+
+strongswan_package_list_swanctl:
+  - strongswan-swanctl
+  - charon-systemd
+  - libstrongswan-standard-plugins
