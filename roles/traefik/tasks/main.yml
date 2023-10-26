@@ -59,7 +59,8 @@
     owner: traefik
     group: traefik
     mode: "0640"
-  notify: Restart traefik
+  notify:
+    - "restart_traefik"
   tags: ['deploy', 'deploy-traefik']
 
 - name: Template dynamic configurations for {{ item }}
@@ -70,7 +71,8 @@
     group: "{{ traefik_user_info.group }}"
     mode: "0640"
   loop: "{{ traefik_dynamic_configs }}"
-  notify: Restart traefik
+  notify:
+    - "restart_traefik"
   tags: ['deploy', 'deploy-traefik']
 
 - name: Ensure traefik container image is present
