@@ -23,7 +23,8 @@
     label:
       type: "{{ item.0.type }}"
       name: "{{ item.1.key }}"
-  notify: Restart systemd-networkd
+  notify:
+    - "restart_systemd_networkd"
 
 - name: Manage nsswitch configuration
   become: true

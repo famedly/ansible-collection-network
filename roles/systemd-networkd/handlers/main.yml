@@ -1,9 +1,8 @@
 ---
-# handlers for ansible-role-systemd-networkd
-
 - name: Restart systemd-networkd
   become: true
   ansible.builtin.service:
     name: systemd-networkd
     state: restarted
+  listen: "restart_systemd_networkd"
   when: systemd_networkd_apply_config

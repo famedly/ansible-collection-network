@@ -22,4 +22,4 @@
     state: absent
   loop: "{{ networkd_files.files | map(attribute='path') | map('basename') | difference(expected_files | flatten) | list }}"
   notify:
-    - Restart systemd-networkd
+    - "restart_systemd_networkd"
