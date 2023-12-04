@@ -12,12 +12,14 @@ PublicKey = {{ hostvars[peer].wg_pubkeys[item.iface_name] }}
 {% if item.psk_enabled is defined %}
 PreSharedKey = {{ hostvars[peer].pre_shared_keys[item.iface_name] }}
 {% endif %}
-AllowedIPs = {{ hostvars[peer].wg_ifaces
+AllowedIPs = {{ (hostvars[peer].wg_ifaces
     | selectattr('iface_name', 'equalto', item.iface_name)
     | map(attribute='ip_addresses_cidr')
-    | list
     | first
-    | join(', ') }}
+    + (item.allowed_ips | default([])))
+    | list
+    | join(', ')
+}}
 Endpoint = {{
     [ (hostvars[peer].wg_ifaces
       | selectattr('iface_name', 'equalto', item.iface_name)
