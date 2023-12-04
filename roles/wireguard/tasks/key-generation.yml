@@ -43,7 +43,6 @@
 
 - name: Generate public key for {{ item.iface_name }}
   ansible.builtin.shell: |
-    set -o pipefail
     echo -n "{{ wg_generated_privkey.stdout }}" | wg pubkey
   register: wg_generated_pubkey
   changed_when: false
