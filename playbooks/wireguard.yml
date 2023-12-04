@@ -1,0 +1,6 @@
+---
+- name: Deploy wireguard tunnels
+  hosts: wireguard
+  become: true
+  roles:
+    - role: wireguard
