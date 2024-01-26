@@ -108,8 +108,8 @@ traefik_certs_to_deploy: []
 # Expects objects with a "fullchain" and "privkey" field
 traefik_certs_to_load: []
 traefik_serve_default_cert: false
-traefik_default_cert_privkey_path: "{{ traefik_certs_to_load[0].privkey }}"
-traefik_default_cert_fullchain_path: "{{ traefik_certs_to_load[0].fullchain }}"
+traefik_default_cert_privkey_path: "{{ traefik_certs_to_load[0].privkey | default('') }}"
+traefik_default_cert_fullchain_path: "{{ traefik_certs_to_load[0].fullchain | default('') }}"
 
 # Build traefik tls config file
 traefik_config_tls_defaults: >-
@@ -131,9 +131,8 @@ traefik_config_tls_certificates:
 
 traefik_config_tls: >-
   {{ traefik_config_tls_options
-  | combine(({'tls': traefik_config_tls_store_default_certificate})
-    if traefik_manual_tls_management_enabled
-      and traefik_serve_default_cert else {}, recursive=true)
+  | combine((traefik_manual_tls_management_enabled and traefik_serve_default_cert)
+    | ternary({'tls': traefik_config_tls_store_default_certificate}, {}), recursive=true)
   | combine(({'tls': traefik_config_tls_certificates})
     if traefik_manual_tls_management_enabled else {}, recursive=true)
   | combine(traefik_config_tls_http_hsts_middleware) }}
