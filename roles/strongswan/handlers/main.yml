@@ -2,28 +2,38 @@
 
 - name: Force restart IPSec stack with systemd
   systemd:
-    unit: strongswan.service
+    unit: "{{ strongswan_charon_systemd_service }}"
     state: restarted
   listen: service-strongswan-restart
 
 - name: Reload swanctl config files
   command: "swanctl -q"
-  listen: swanctl-reload
+  listen: swanctl-config-reload
 
 - name: Force charon to reread strongswan.conf
   command: "swanctl -r"
   listen: swanctl-charon-reload
 
-- name: Restart 
+
+# This handler is still unfinished and needs some love :/
+- name: Restart ipsec ipsec connections 
   block:
     - command: "{{ 'swanctl -t --ike ' ~ item.key }}"
     - command: "{{ 'swanctl -i --ike ' ~ item.key }}"
     - command: "{{ 'swanctl -i --child ' ~ item.key }}"
       loop: "{{ lookup (item.value.children) }}"
   loop: "{{ lookup ( _ipsec_restartable_connections ) }}"
-  when: ipsec_restart_connections_on_change
+  when: strongswan_restart_connections_on_change
   listen: swanctl-restart-connection
 
 - name: Reload /etc/sysctl.conf
   command: sysctl -p
   listen: sysctl-reload
+
+- name: Restart openmetrics_vici_exporter container
+  listen: container-openmetrics-vici-exporter-restart
+  community.docker.docker_container:
+    name: "{{ openmetrics_vici_exporter_container_name }}"
+    state: started
+    restart: true
+

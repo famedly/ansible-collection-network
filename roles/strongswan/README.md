@@ -61,17 +61,14 @@ connections {
 ## Example Configuration
 ```yaml
 vars:
-  strongswan_swanctl_config:
-  - "evlli":
-    secrets:
-    - "famedly-evlli":
+  strongswan_connection_name: "evlli"
+  strongswan_secrets:
+    - "ike-famedly-evlli":
       id:
         - "{{ ansible_hostname }}"
         - "route.f6.evl.li"
       secret: "miaumiauawooooo!bark"
-      type: ike
-
-    connections:
+  strongswan_connections:
     - "famedly-evlli":
       __extend__: [default-connection]
       local_addrs: [10.0.0.1]

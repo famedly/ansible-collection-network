@@ -1,34 +1,57 @@
 ---
 
-- name: "Write {{ config_dir }}/connections.conf"
+- name: "Ensure config directory for {{ strongswan_connection_name }}"
+  ansible.builtin.file:
+    state: "{{ strongswan_connection_state | default('directory', True) }}"
+    path: "{{ strongswan_swanctl_config_path ~ '/' ~ strongswan_connection_name }}"
+    mode: "0755"
+ 
+- name: "Ensure connections for {{ strongswan_connection_name }} are configured"
   become: true
-  template:
+  ansible.builtin.template:
     src: templates/swanctl/conf.j2
-    dest: "{{ config_dir }}/connections.conf"
+    dest: "{{ strongswan_swanctl_config_path ~ '/' ~ strongswan_connection_name ~ '/connection.conf' }}"
     mode: "0644"
   vars:
-    data: "{{ config_body.connections }}"
-  when: config_body.connections
+    data: 
+      connections: "{{ strongswan_connections }}"
+  when: "{{ strongswan_connections is defined and strongswan_connection_state is not 'absent'}}"
+  notify: swanctl-config-reload
 
-- name: "Write {{ config_dir }}/secrets.conf"
+- name: "Ensure secrets for {{ strongswan_connection_name }} are present"
   become: true
-  template:
+  ansible.builtin.template:
     src: templates/swanctl/conf.j2
-    dest: "{{ config_dir }}/secrets.conf"
+    dest: "{{ strongswan_swanctl_config_path ~ '/' ~ strongswan_connection_name ~ '/secrets.conf' }}"
     mode: "0600"
   vars:
     data:
-      secrets: >-
-        {% for (secret_name,secret_body) in config_body.secrets %}
-        - {{ secret_body.type ~ secret_name }}:
-          {% set id_index = 0 %}
-          {% for id_value in secret_body.id %}
-          {{ 'id' ~ id_index }}: {{ id_value }}
-          {% set id_index = id_index +1 %}
-          {% endfor %}
-        {% endfor %}
-  when: config_body.secrets
+      secrets: "{{ stronswan_secrets}}"
+  when: "{{ strongswan_secrets is defined and strongswan_connection_state is not 'absent'}}"
+  notify: swanctl-config-reload
 
-- name: Configure Firewall
-  include_tasks:
-    file: ufw.yml
+- name: Ensure UFW allows connections
+  loop: "{{ strongswan_connections }}"
+  loop_control:
+    label: "{{ connection }}"
+    loop_var: connection
+  vars:
+    delete_connection: "{{ true if strongswan_connection_state is 'absent' else false }}"
+  block:
+    - name: "Allow IKE Traffic from {{ connection.remote_addrs }}"
+      community.general.ufw:
+        rule: allow
+        proto: udp
+        port: 500
+        logging: low
+        src: "{{ connection.remote_addrs }}"
+        dest: "{{ connection.local_addrs }}"
+        delete: "{{ delete_connection }}"
+
+    - name: "Allow ESP Traffic from {{ connection.remote_addrs }}"
+      community.general.ufw:
+        rule: allow
+        proto: esp
+        src: "{{ connection.remote_addrs }}"
+        dest: "{{ connection.local_addrs }}"
+        delete: "{{ delete_connection }}"
