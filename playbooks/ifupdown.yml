@@ -1,0 +1,6 @@
+---
+- name: Configure interfaces with ifupdown
+  hosts: "{{ ifupdown_hosts | default('ifupdown') }}" 
+  become: "{{ ifupdown_become | default(true, false) }}"
+  roles:
+    - role: famedly.network.ifupdown
