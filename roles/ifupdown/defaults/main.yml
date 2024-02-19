@@ -1,0 +1,4 @@
+---
+
+ifupdown_interfaces: []
+ifupdown_confd_path: "/etc/network/interfaces.d/"

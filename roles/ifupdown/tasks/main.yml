@@ -1,0 +1,54 @@
+---
+
+- name: Template interface config
+  ansible.builtin.blockinfile:
+    block: |+2
+      {% for iface in ifupdown_file.ifaces %}
+      {% if iface.auto | default(false) %}
+      auto {{ iface.name }}
+      {% endif %}
+      {% if iface.allow_hotplug | default(false) %}
+      allow-hotplug {{ iface.name }}
+      {% endif %}
+      iface {{ iface.name }} {{ iface.addr_family | default('inet') }} {{ iface.method }}
+      {% if ((iface.addresses | default([])) is iterable and (iface.addresses | default([])) is not string | ternary(iface.addresses | default([]), [ iface.addresses ])) | length > 0 %}
+              address {{ ((iface.addresses | default([])) is iterable and (iface.addresses | default([])) is not string | ternary(iface.addresses | default([]), [ iface.addresses ])) | first }}
+      {% endif %}
+      {% if ('gateway' in iface) and iface.gateway | default(false)  %}
+              gateway {{ gateway }}
+      {% endif %}
+      {% for pre_up in ((iface.pre_up | default([])) is iterable and (iface.pre_up | default([])) is not string | ternary(iface.pre_up | default([]), [ iface.pre_up ])) %}
+              pre-up {{ pre_up }}
+      {% endfor %}
+      {% for up in ((iface.up | default([])) is iterable and (iface.up | default([])) is not string | ternary(iface.up | default([]), [ iface.up ])) %}
+              up {{ up }}
+      {% endfor %}
+      {% for post_up in ((iface.post_up | default([])) is iterable and (iface.post_up | default([])) is not string | ternary(iface.post_up | default([]), [ iface.post_up ])) %}
+              post-up {{ post_up }}
+      {% endfor %}
+
+      {% for pre_down in ((iface.pre_down | default([])) is iterable and (iface.pre_down | default([])) is not string | ternary(iface.pre_down | default([]), [ iface.pre_down ])) %}
+              pre-down {{ pre_down }}
+      {% endfor %}
+      {% for down in ((iface.down | default([])) is iterable and (iface.down | default([])) is not string | ternary(iface.down | default([]), [ iface.down ])) %}
+              down {{ down }}
+      {% endfor %}
+      {% for post_down in ((iface.post_down | default([])) is iterable and (iface.post_down | default([])) is not string | ternary(iface.post_down | default([]), [ iface.post_down ])) %}
+              post-down {{ post_down }}
+      {% endfor %}
+      {% if ((iface.addresses | default([])) is iterable and (iface.addresses | default([])) is not string | ternary(iface.addresses | default([]), [ iface.addresses ])) | length > 1 %}
+      {% for addr in ((iface.addresses | default([]) | list)[1:]) %}
+      iface {{ iface.name }} {{ iface.addr_family | default('inet') }} {{ iface.method }}
+              address {{ addr }}
+      {% endfor %}
+      {% endif %}
+      {% endfor %}
+    path: "{{ ifupdown_confd_path }}{{ ifupdown_file.label }}"
+    create: true
+    owner: root
+    group: root
+    mode: 0644
+  loop: "{{ ifupdown_interfaces }}"
+  loop_control:
+    loop_var: ifupdown_file
+    label: "{{ ifupdown_file.label }} ({{ ifupdown_file.ifaces | map(attribute='name') | unique | join(',') }}"
