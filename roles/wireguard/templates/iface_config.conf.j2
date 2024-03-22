@@ -5,6 +5,15 @@ PrivateKey = {{ wg_privkeys[item.iface_name] }}
 {% if item.mtu is defined %}
 MTU = {{ item.mtu }}
 {% endif %}
+{% if item.post_up is defined %}
+PostUp = {{ item.post_up }}
+{% endif %}
+{% if item.pre_down is defined %}
+PreDown = {{ item.pre_down }}
+{% endif %}
+{% if item.table is defined %}
+Table = {{ item.table }}
+{% endif %}
 
 {% for peer in item.peers %}
 [Peer]
