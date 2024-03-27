@@ -1,0 +1,28 @@
+---
+
+strongswan_package_list:
+  - strongswan-swanctl
+  - charon-systemd
+  - libstrongswan-standard-plugins
+
+strongswan_swanctl_base_path: "/etc/swanctl"
+strongswan_swanctl_config_path: "{{ strongswan_swanctl_base_path }}/conf.d"
+strongswan_swanctl_config_file: "{{ strongswan_swanctl_base_path }}/swanctl.conf"
+strongswan_charon_config_file: "/etc/strongswan.conf"
+
+strongswan_charon_systemd_service: "strongswan.service"
+
+strongswan_charon_listen_interfaces: ["eth0"]
+strongswan_charon_vici_socket: "/var/run/charon.vici"
+
+strongswan_charon_config_body: "{{ strongswan_charon_config | default(strongswan_charon_config_default) }}"
+strongswan_charon_config_default:
+  charon:
+    plugins:
+      bypass-lan:
+        interfaces_use: "{{ strongswan_charon_listen_interface }}"
+      vici:
+        socket: "{{ strongswan_charon_vici_socket }}"
+      swanctl:
+        socket: "{{ strongswan_charon_vici_socket }}"
+

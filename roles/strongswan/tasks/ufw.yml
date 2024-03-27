@@ -1,0 +1,26 @@
+---
+
+- name: Ensure UFW allows connections
+
+- block:
+  - name: "Allow IKE Traffic from {{ connection.remote_addrs }}"
+    community.general.ufw:
+      rule: allow
+      proto: udp
+      port: 500
+      logging: low
+      src: "{{ connection.remote_addrs }}"
+      dest: "{{ connection.local_addrs }}"
+
+  - name: "Allow ESP Traffic from {{ connection.remote_addrs }}"
+    community.general.ufw:
+      rule: allow
+      proto: esp
+      src: "{{ connection.remote_addrs }}"
+      dest: "{{ connection.local_addrs }}"
+
+  vars:
+    connection: item.value
+  loop: lookup( config.connections )
+  loop_control:
+    label: "{{ item.key }}"

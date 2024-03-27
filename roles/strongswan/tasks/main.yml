@@ -1,0 +1,19 @@
+---
+
+- name: Setup Strongswan
+  tags: setup
+  include_tasks:
+    file: setup.yml
+
+- name: Configure connections
+  tags: config
+  include_tasks:
+    file: swanctl.yml
+    apply:
+      vars:
+        config_dir: "{{ strongswan_swanctl_config_path }}/{{config.key}}"
+        config_body: "config.value"
+  loop: "{{ strongswan_swanctl_connection_configs }}"
+  loop_control:
+    loop_var: config
+    label: "{{ config.key }}"
