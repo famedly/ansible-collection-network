@@ -104,5 +104,5 @@
 #       user: "{{ traefik_user_info.uid }}:{{ traefik_user_info.group }}"
     healthcheck:
       test: >-
-        wget -q --spider http://localhost:8022/ping
+        wget --proxy off -q --spider http://{{ traefik_container_healthcheck_host }}:8022/ping
   tags: ['deploy', 'deploy-traefik']

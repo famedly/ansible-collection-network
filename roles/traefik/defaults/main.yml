@@ -97,6 +97,7 @@ traefik_container_image_name: "traefik"
 
 traefik_container_socket: /var/run/docker.sock
 traefik_container_pull: true
+traefik_container_healthcheck_host: localhost
 
 traefik_manual_tls_management_enabled: false
 traefik_cert_path: "{{ traefik_base_path }}/certs"
