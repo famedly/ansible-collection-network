@@ -111,6 +111,8 @@ traefik_certs_to_load: []
 traefik_serve_default_cert: false
 traefik_default_cert_privkey_path: "{{ traefik_certs_to_load[0].privkey | default('') }}"
 traefik_default_cert_fullchain_path: "{{ traefik_certs_to_load[0].fullchain | default('') }}"
+# Accepts a path where traefik can template its renewal script into
+#traefik_lego_post_renewal_script:
 
 # Build traefik tls config file
 traefik_config_tls_defaults: >-
