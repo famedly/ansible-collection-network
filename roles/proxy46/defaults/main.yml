@@ -1,4 +1,5 @@
 ---
+proxy46_version: "" # TODO
 proxy46_user: proxy46
 proxy46_base_path: /opt/proxy46
 proxy46_base_path_owner: "{{ proxy46_user }}"
@@ -8,10 +9,26 @@ proxy46_base_path_mode: "0750"
 proxy46_log_level: error
 proxy46_container_name: proxy46
 
-proxy46_container_image_ref: "{{ proxy46_container_image_name }}:{{ proxy46_container_image_tag }}"
-proxy46_container_image_name: registry.gitlab.com/famedly/infra/containers/proxy46
+proxy46_container_image_reference: >-
+  {{
+    proxy46_container_image_repository
+    + ':'
+    + proxy46_container_image_tag | default('v' + proxy46_version)
+  }}
+proxy46_container_image_repository: >-
+  {{
+    (
+      container_registries[proxy46_container_image_registry]
+      | default(proxy46_container_image_registry)
+    )
+    + '/'
+    + proxy46_container_image_namespace | default('')
+    + proxy46_container_image_name
+  }}
+proxy46_container_image_registry: "docker.nexus.famedly.de"
+proxy46_container_image_name: "proxy46"
 proxy46_container_image_tag: "latest"
-proxy46_container_pull: true
+proxy46_container_image_force_pull: "{{ proxy46_container_image_tag is defined }}"
 
 proxy46_prefix: "{{ famedly_server_host_ipv6 | regex_replace('((::)1|(:)0:1)$', '\\2\\3') }}"
 proxy46_dns: "1.1.1.1"

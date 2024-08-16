@@ -47,8 +47,8 @@
 - name: Ensure proxy46 container image is present
   become: true
   community.docker.docker_image:
-    name: "{{ proxy46_container_image_ref }}"
-    force_source: "{{ proxy46_container_pull }}"
+    name: "{{ proxy46_container_image_reference }}"
+    force_source: "{{ proxy46_container_image_force_pull }}"
     source: pull
     state: present
   register: proxy46_container_image_pulled
@@ -61,7 +61,7 @@
   become: true
   community.docker.docker_container:
     name: "{{ proxy46_container_name }}"
-    image: '{{ proxy46_container_image_ref }}'
+    image: '{{ proxy46_container_image_reference }}'
     networks: "{{ proxy46_container_networks | default(omit) }}"
     network_mode: host
     volumes: "{{ proxy46_container_volumes }}"
