@@ -14,3 +14,15 @@
     enabled: true
     state: started
   when: ansible_os_family in ["Void"]
+
+# This separate entry here is needed because
+# the service module does not support dinit
+- name: Start yggdrasil
+  ansible.builtin.command:
+    argv:
+      - /usr/bin/dinitctl
+      - --system
+      - enable
+      - yggdrasil
+    creates: /etc/dinit.d/boot.d/yggdrasil
+  when: ansible_os_family in ["Chimera"]

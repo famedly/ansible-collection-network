@@ -15,4 +15,8 @@
   ansible.builtin.import_tasks: install/arch.yml
   when: ansible_os_family in ["Archlinux"]
 
+- name: Import chimera tasks
+  ansible.builtin.import_tasks: install/chimera.yml
+  when: ansible_os_family in ["Chimera"]
+
 # TODO: Support more distros (and maybe even Windows one day)

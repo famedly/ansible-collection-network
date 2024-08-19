@@ -14,3 +14,13 @@
     state: restarted
   when: ansible_os_family in ["Void"]
   listen: "restart_yggdrasil"
+
+- name: Restart yggdrasil using dinit
+  ansible.builtin.command:
+    argv:
+      - dinitctl
+      - --system
+      - restart
+      - yggdrasil
+  when: ansible_os_family in ["Chimera"]
+  listen: "restart_yggdrasil"
