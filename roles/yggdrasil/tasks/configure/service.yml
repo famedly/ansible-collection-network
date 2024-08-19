@@ -4,7 +4,7 @@
     name: yggdrasil
     enabled: true
     state: started
-  when: ansible_lsb.id != "Void"
+  when: ansible_os_family in ["Debian", "RedHat", "Archlinux"]
 
 # This separate entry here is needed because
 # the service module does not support runit
@@ -13,4 +13,4 @@
     name: yggdrasil
     enabled: true
     state: started
-  when: ansible_lsb.id == "Void"
+  when: ansible_os_family in ["Void"]

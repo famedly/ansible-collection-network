@@ -1,18 +1,18 @@
 ---
 - name: Import void linux tasks
   ansible.builtin.import_tasks: install/void.yml
-  when: ansible_os_family == "void"
+  when: ansible_os_family in ["Void"]
 
 - name: Import fedora tasks
   ansible.builtin.import_tasks: install/fedora.yml
-  when: ansible_os_family == "RedHat"
+  when: ansible_os_family in ["RedHat"]
 
 - name: Import debian tasks
   ansible.builtin.import_tasks: install/debian.yml
-  when: ansible_os_family == "Debian"
+  when: ansible_os_family in ["Debian"]
 
 - name: Import arch tasks
   ansible.builtin.import_tasks: install/arch.yml
-  when: ansible_os_family == "Archlinux"
+  when: ansible_os_family in ["Archlinux"]
 
 # TODO: Support more distros (and maybe even Windows one day)

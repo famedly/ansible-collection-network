@@ -4,7 +4,7 @@
     name: yggdrasil
     enabled: true
     state: restarted
-  when: ansible_lsb.id != "Void"
+  when: ansible_os_family in ["Debian", "RedHat", "Archlinux"]
   listen: "restart_yggdrasil"
 
 - name: Restart yggdrasil using community.general.runit
@@ -12,5 +12,5 @@
     name: yggdrasil
     enabled: true
     state: restarted
-  when: ansible_lsb.id == "Void"
+  when: ansible_os_family in ["Void"]
   listen: "restart_yggdrasil"
