@@ -1,0 +1,26 @@
+http:
+  routers:
+    https-router:
+      entryPoints:  
+        - web-secure
+      rule: "Host(`{{ livekit_domain }}`)"
+      service: livekit-service
+      tls: {}
+  services:
+    livekit-service:
+      loadBalancer:
+        servers:
+          - url: "http://127.0.0.1:7880"
+tcp:
+  routers:
+    turns-router:
+      entryPoints:
+        - web-secure
+      rule: "HostSNI(`{{ turnserver_domain }}`)"
+      tls: {}
+      service: turns
+  services:
+    turns:
+      loadBalancer:
+        servers:
+          - address: "127.0.0.1:5349"
