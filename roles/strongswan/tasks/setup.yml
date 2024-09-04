@@ -1,0 +1,71 @@
+---
+
+- name: Install strongswan
+  apt:
+    name: "{{ strongswan_package_list }}"
+    cache_valid_time: 86400
+  register: task_result
+  until: task_result is success
+  retries: 3
+  delay: 2
+  when: ansible_os_family == "Debian"
+  notify: service-strongswan-restart
+
+- name: Ensure directories are present
+  ansible.builtin.file:
+    state: directory
+    mode: "0755"
+    path: "{{ item }}"
+  loop:
+    - "{{ strongswan_swanctl_base_path }}"
+    - "{{ strongswan_swanctl_config_path }}"
+
+- name: Write charon config
+  template:
+    src: templates/swanctl/conf.j2
+    dest: "{{ strongswan_charon_config_file }}"
+    mode: "0644"
+  become: true
+  vars:
+    data: "{{ strongswan_charon_config_body }}"
+  notify: swanctl-charon-reload
+
+- name: Enable forwarding
+  ansible.builtin.blockinfile:
+    dest: /etc/sysctl.conf
+    block: |
+      net.ipv4.ip_forward = 1
+      net.ipv4.conf.all.accept_redirects = 0
+      net.ipv4.conf.all.send_redirects = 0
+      net.ipv6.conf.all.forwarding = 1
+  notify: sysctl-reload
+
+- name: Ensure container image is present locally
+  community.docker.docker_image:
+    name: "{{ strongswan_openmetrics_vici_exporter_container_image_reference }}"
+    source: "pull"
+    state: "present"
+    force_source: "{{ strongswan_openmetrics_vici_exporter_container_force_pull }}"
+  register: strongswan_openmetrics_vici_exporter_container_image_pulled
+  until: strongswan_openmetrics_vici_exporter_container_image_pulled is success
+  retries: 10
+  delay: 5
+  tags: ["deploy", "deploy-strongswan"]
+
+- name: Ensure container is started
+  community.docker.docker_container:
+    image: "{{ strongswan_openmetrics_vici_exporter_container_image_reference }}"
+    name: "{{ strongswan_openmetrics_vici_exporter_container_name }}"
+    state: "started"
+    restart_policy: "{{ strongswan_openmetrics_vici_exporter_container_restart_policy | default(omit) }}"
+    user: "{{ strongswan_openmetrics_vici_exporter_user_registered.uid ~ ':' ~ acmed_user_registered.group }}"
+    volumes: "{{ strongswan_openmetrics_vici_exporter_container_volumes }}"
+    ports: "{{ strongswan_openmetrics_vici_exporter_container_ports }}"
+    env: "{{ strongswan_openmetrics_vici_exporter_container_env | default(omit) }}"
+    labels: "{{ strongswan_openmetrics_vici_exporter_container_labels_merged | default(omit) }}"
+    command: "{{ strongswan_openmetrics_vici_exporter_container_command | default(omit) }}"
+    etc_hosts: "{{ strongswan_openmetrics_vici_exporter_container_etc_hosts | default(omit) }}"
+    networks: "{{ strongswan_openmetrics_vici_exporter_container_networks | default(omit) }}"
+    purge_networks: "{{ strongswan_openmetrics_vici_exporter_container_purge_networks | default(omit) }}"
+  tags: ["deploy", "deploy-strongswan"]
+
