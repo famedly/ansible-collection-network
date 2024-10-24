@@ -17,28 +17,51 @@ Table = {{ item.table }}
 
 {% for peer in item.peers %}
 [Peer]
-PublicKey = {{ hostvars[peer].wg_pubkeys[item.iface_name] }}
+PublicKey = {{ hostvars[peer].wg_pubkeys[item.iface_name] | default(wireguard_config_directory[peer][item.iface_name].wg_pubkey) }}
 {% if item.psk_enabled is defined %}
-PreSharedKey = {{ hostvars[peer].pre_shared_keys[item.iface_name] }}
+PreSharedKey = {{ hostvars[peer].pre_shared_keys[item.iface_name] | default(wireguard_config_directory[peer][item.iface_name].pre_sharing_key) }}
 {% endif %}
-AllowedIPs = {{ (hostvars[peer].wg_ifaces
-    | selectattr('iface_name', 'equalto', item.iface_name)
-    | map(attribute='ip_addresses_cidr')
-    | first
-    + (item.allowed_ips | default([])))
-    | list
+AllowedIPs = {{
+    (
+      (
+        (
+          hostvars[peer].wg_ifaces
+          | selectattr('iface_name', 'equalto', item.iface_name)
+          | map(attribute='ip_addresses_cidr')
+          | first
+          | list
+        ) | default(
+          wireguard_config_directory[peer][item.iface_name].ip_addresses_cidr
+          | list
+        )
+      )
+      + (
+          item.allowed_ips | default([])
+        )
+        | list
+    )
     | join(', ')
 }}
 Endpoint = {{
-    [ (hostvars[peer].wg_ifaces
-      | selectattr('iface_name', 'equalto', item.iface_name)
-      | map(attribute='peering_ip')
-      | first),
-      (hostvars[peer].wg_ifaces
-      | selectattr('iface_name', 'equalto', item.iface_name)
-      | map(attribute='peering_port')
-      | first)
-    ] | join(':')
+    (
+      [ (
+          hostvars[peer].wg_ifaces
+          | selectattr('iface_name', 'equalto', item.iface_name)
+          | map(attribute='peering_ip')
+          | first
+        ),
+        (
+          hostvars[peer].wg_ifaces
+          | selectattr('iface_name', 'equalto', item.iface_name)
+          | map(attribute='peering_port')
+          | first
+        )
+      ]
+    ) | default(
+      [ wireguard_config_directory[peer][item.iface_name].peering_ip,
+        wireguard_config_directory[peer][item.iface_name].peering_port
+      ]
+    ) | join(':')
 }}
 
 {% endfor %}

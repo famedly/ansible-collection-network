@@ -3,9 +3,35 @@
 This ansible role can be used to set up [wireguard](https://www.wireguard.com/)
 on multiple ansible hosts to create (for example) meshed VPN networks on them.
 
-The role assumes that for a wireguard network, all participating hosts are
-available during the usage of the role. This is needed to distribute the public
+The role assumes that for setting up a new wireguard network, all participating hosts are 
+available during the execution time of the playbook. This is needed to distribute the public 
 wireguard keys correctly.
+
+As soon as the tunnel has initally been set up, you might want to add the parameters used for 
+the participating hosts to `inventory/group_vars/all/wireguard.yml` as dictionaries below the 
+variable `wireguard_config_directory`, f. ex. (for two peers called `alice` and `bob`):
+
+```yaml
+wireguard_config_directory:
+  alice.famedly.de:
+    wg_net0:
+      wg_pubkey: "<alice's public key of interface 'wg_net0'>"
+      ip_addresses_cidr:
+      - "<IP address with CIDR>"
+      peering_ip: "bob.famedly.de"
+      peering_port: 51820
+  bob.famedly.de:
+    wg_net0:
+      wg_pubkey: "<bob's public key of interface 'wg_net0'>"
+      ip_addresses_cidr:
+      - "<IP address with CIDR>"
+      peering_ip: "alice.famedly.de"
+      peering_port: 51820
+```
+
+As soon as these variables have been correctly set up, the role even works without 
+all of the participating hosts being included when running the playbook, because all 
+of the needed information is available inside the `group_vars/all` directory.
 
 ## Usage
 
@@ -101,4 +127,4 @@ wg_ifaces:
 
 - [ ] Allow configuring `AllowedIPs` to route all traffic through wireguard using a default route
 - [ ] Allow using a peer as DNS server
-- [ ] Add `PresharedKey` distribution for post-quantom cryptography
+- [ ] Add `PresharedKey` distribution for post-quantum cryptography
