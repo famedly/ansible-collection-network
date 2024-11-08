@@ -36,6 +36,7 @@
       {% for post_down in ((iface.post_down | default([])) is iterable and (iface.post_down | default([])) is not string | ternary(iface.post_down | default([]), [ iface.post_down ])) %}
               post-down {{ post_down }}
       {% endfor %}
+              post-down ip addr flush dev {{ iface.name }}
       {% if ((iface.addresses | default([])) is iterable and (iface.addresses | default([])) is not string | ternary(iface.addresses | default([]), [ iface.addresses ])) | length > 1 %}
       {% for addr in ((iface.addresses | default([]) | list)[1:]) %}
       iface {{ iface.name }} {{ iface.addr_family | default('inet') }} {{ iface.method }}
