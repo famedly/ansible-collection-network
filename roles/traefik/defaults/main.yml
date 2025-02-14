@@ -1,6 +1,6 @@
 ---
 
-traefik_version: "2.11.8"
+traefik_version: "2.11.20"
 traefik_user: traefik
 traefik_base_path: /opt/traefik
 traefik_base_path_owner: "{{ traefik_user }}"
@@ -31,6 +31,7 @@ traefik_container_labels: {}
 traefik_container_env: {}
 traefik_api_users_file: "{{ traefik_base_path }}/config.d/auth.htpasswd"
 traefik_api_admin_username: admin
+traefik_set_kernel_udp_buffer_size: true
 
 traefik_cert_resolvers: []
 # wants:

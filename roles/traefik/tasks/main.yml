@@ -75,6 +75,26 @@
     - "restart_traefik"
   tags: ['deploy', 'deploy-traefik']
 
+# https://github.com/quic-go/quic-go/wiki/UDP-Buffer-Sizes
+- name: Set recommended UDP buffer sizes
+  ansible.posix.sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+    reload: true
+    sysctl_file: /etc/sysctl.d/traefik.conf
+  loop: "{{ sysctl_entries }}"
+  vars:
+    sysctl_entries:
+      - name: net.core.rmem_max
+        value: 7500000
+      - name: net.core.wmem_max
+        value: 7500000
+  notify:
+    - "restart_traefik"
+  when: traefik_set_kernel_udp_buffer_size
+  tags: ['deploy', 'deploy-traefik']
+
 - name: Ensure traefik container image is present
   community.docker.docker_image:
     name: "{{ traefik_container_image_reference }}"
