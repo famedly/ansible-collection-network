@@ -75,6 +75,15 @@
     - "restart_traefik"
   tags: ['deploy', 'deploy-traefik']
 
+- name: Remove api-router configuration, when disabled
+  ansible.builtin.file:
+    path: "{{ traefik_dyn_config_path }}/api-router.yml"
+    state: absent
+  notify:
+    - "restart_traefik"
+  when: not traefik_enable_api
+  tags: ['deploy', 'deploy-traefik']
+
 # https://github.com/quic-go/quic-go/wiki/UDP-Buffer-Sizes
 - name: Set recommended UDP buffer sizes
   ansible.posix.sysctl:

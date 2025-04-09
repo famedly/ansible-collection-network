@@ -1,6 +1,6 @@
 ---
 
-traefik_version: "2.11.20"
+traefik_version: "3.3.5"
 traefik_user: traefik
 traefik_base_path: /opt/traefik
 traefik_base_path_owner: "{{ traefik_user }}"
@@ -10,7 +10,7 @@ traefik_base_path_mode: "0750"
 traefik_dyn_config_path: "{{ traefik_base_path }}/config.d"
 
 traefik_log_level: ERROR
-traefik_enable_http3: false
+traefik_enable_http3: true
 traefik_enable_docker: true
 traefik_enable_api: true
 traefik_enable_api_tls: true
@@ -162,20 +162,17 @@ traefik_config_tls_http_hsts_middleware:
 traefik_config_tls_default_strictsni: true
 
 traefik_config_tls_default_lax:
-  lax:
-    preferServerCipherSuites: true
+  lax: {}
 
 traefik_config_tls_default_nosni:
   nosni:
     minVersion: "VersionTLS12"
     sniStrict: false
-    preferServerCipherSuites: true
 
 traefik_config_tls_default:
   default:
     minVersion: "VersionTLS12"
     sniStrict: "{{ traefik_config_tls_default_strictsni }}"
-    preferServerCipherSuites: true
     cipherSuites:
       - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
       - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
@@ -188,4 +185,3 @@ traefik_config_tls_default_strict:
   strict:
     minVersion: "VersionTLS13"
     sniStrict: true
-    preferServerCipherSuites: true

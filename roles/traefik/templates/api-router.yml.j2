@@ -12,19 +12,11 @@ http:
         - apiAuth
       {% endif %}
       {% if traefik_enable_api_tls %}
-      tls:
         {% if not traefik_manual_tls_management_enabled %}
+      tls:
         certResolver: letsencrypt
-        {% if traefik_api_tls_domains %}
-        domains:
-          {% for domain in traefik_api_tls_domains %}
-          - main: "{{ domain.main }}"
-            sans:
-	    {% for san in domain.sans %}
-              - "{{ san }}"
-            {% endfor %}
-          {% endfor %}
-        {% endif %}
+        {% else %}
+      tls: {}
         {% endif %}
       {% endif %}
   {% if traefik_enable_api_authentication %}

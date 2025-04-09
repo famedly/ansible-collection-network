@@ -10,19 +10,11 @@ http:
         {% endfor %}
       service: prometheus@internal
       {% if traefik_metrics_enable_tls %}
-      tls:
         {% if not traefik_manual_cert_management_enabled|bool %}
+      tls:
         certResolver: letsencrypt
-        {% if traefik_api_tls_domains is defined %}
-        domains:
-          {% for domain in traefik_api_tls_domains %}
-          - main: "{{ domain.main }}"
-            sans:
-	    {% for san in domain.sans %}
-              - "{{ san }}"
-            {% endfor %}
-          {% endfor %}
-        {% endif %}
+        {% else %}
+      tls: {}
         {% endif %}
       {% endif %}
 {% endif %}
