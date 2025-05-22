@@ -1,13 +1,16 @@
 events {
-	worker_connections 1024;
+	worker_connections 2048;
 }
 
 error_log /dev/stdout {{ proxy46_log_level }};
 pid /var/empty/nginx.pid;
 
 stream {
+	limit_conn_zone $binary_remote_addr zone=stream_perclient:10m;
+
 	server {
 		listen 443;
+		limit_conn stream_perclient 300;
 		ssl_preread on;
 		resolver {{ proxy46_dns }} ipv4=off expect_a={{ famedly_server_host_ipv4 }};
 		proxy_bind [{{ proxy46_prefix }}$remote_addr]:$remote_port transparent;
@@ -23,11 +26,14 @@ http {
 	uwsgi_temp_path /var/empty 1 2;
 	scgi_temp_path /var/empty 1 2;
 
+	limit_conn_zone $binary_remote_addr zone=http_perclient:10m;
+
 	server {
 		listen 80;
 
 		location / {
 			resolver {{ proxy46_dns }} ipv4=off expect_a={{ famedly_server_host_ipv4 }};
+			limit_conn http_perclient 100;
 			proxy_bind [{{ proxy46_prefix }}$remote_addr]:$remote_port transparent;
 			proxy_pass http://$http_host:80;
 			proxy_http_version 1.1;
