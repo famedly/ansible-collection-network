@@ -1,0 +1,39 @@
+common:
+  daemonize: false
+  log_media: stdout
+  log_level: {{ crowdsec_log_level }}
+  log_dir: /var/log/
+crowdsec_service:
+  acquisition_path: /etc/crowdsec/acquis.yaml
+config_paths:
+  config_dir: /etc/crowdsec/
+  data_dir: /var/lib/crowdsec/data/
+  simulation_path: /etc/crowdsec/simulation.yaml
+  hub_dir: /etc/crowdsec/hub/
+  index_path: /etc/crowdsec/hub/.index.json
+  notification_dir: /etc/crowdsec/notifications/
+  plugin_dir: /usr/local/lib/crowdsec/plugins/
+db_config:
+  log_level: info
+  type: sqlite
+  db_path: /var/lib/crowdsec/data/crowdsec.db
+  flush:
+    max_items: 5000
+    max_age: 7d
+  use_wal: false
+api:
+  server:
+    enable: true
+    listen_uri: 0.0.0.0:8080
+    log_level: info
+    profiles_path: /etc/crowdsec/profiles.yaml
+    trusted_ips:
+      - 127.0.0.1
+    online_client:
+      credentials_path: /etc/crowdsec/online_api_credentials.yaml
+  client:
+    credentials_path: /etc/crowdsec/local_api_credentials.yaml
+prometheus:
+  enabled: true
+  listen_addr: 0.0.0.0
+  listen_port: 6060

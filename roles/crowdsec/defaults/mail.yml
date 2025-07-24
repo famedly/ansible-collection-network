@@ -1,0 +1,28 @@
+# General
+crowdsec_user: crowdsec
+crowdsec_base_path: /opt/crowdsec
+crowdsec_version: latest
+
+# main work
+crowdsec_container_name: crowdsec
+crowdsec_container_image_reference: "crowdsecurity/crowdsec:{{ crowdsec_version }}"
+crowdsec_log_level: info
+crowdsec_container_ports:
+  - "127.0.0.1:9191:8080"
+  - "127.0.0.1:6060:6060"
+crowdsec_container_volumes:
+  - "{{ crowdsec_base_path }}/config:/etc/crowdsec"
+  - "{{ crowdsec_base_path }}/data:/var/lib/crowdsec/data"
+  - "/dev/null:/etc/crowdsec/online_api_credentials.yaml"
+  - "/var/log/auth.log:/var/log/auth.log:ro"
+
+# Bouncer
+crowdsec_bouncer_enabled: true
+crowdsec_bouncer_container_name: crowdsec-bouncer
+crowdsec_bouncer_image_reference: "crowdsecurity/crowdsec-firewall-bouncer:nftables"
+crowdsec_bouncer_api_url: "http://127.0.0.1:9191/"
+crowdsec_bouncer_api_key: "CHANGEME"  # Generieren mit `cscli bouncers add`
+crowdsec_bouncer_log_level: info
+crowdsec_bouncer_update_frequency: 10s
+crowdsec_bouncer_volumes:
+  - "{{ crowdsec_base_path }}/bouncer_config.yaml:/etc/crowdsec/bouncer/config.yaml:ro"

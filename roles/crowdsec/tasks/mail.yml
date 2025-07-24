@@ -1,0 +1,51 @@
+- name: Ensure crowdsec user exists
+  ansible.builtin.user:
+    name: "{{ crowdsec_user }}"
+    shell: /usr/sbin/nologin
+
+- name: Create base directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ crowdsec_user }}"
+    group: "{{ crowdsec_user }}"
+    mode: '0750'
+  loop:
+    - "{{ crowdsec_base_path }}"
+    - "{{ crowdsec_base_path }}/config"
+    - "{{ crowdsec_base_path }}/data"
+
+- name: Template crowdsec config.yaml
+  ansible.builtin.template:
+    src: config.yaml.j2
+    dest: "{{ crowdsec_base_path }}/config/config.yaml"
+    owner: "{{ crowdsec_user }}"
+    group: "{{ crowdsec_user }}"
+    mode: "0644"
+
+- name: Run CrowdSec container
+  community.docker.docker_container:
+    name: "{{ crowdsec_container_name }}"
+    image: "{{ crowdsec_container_image_reference }}"
+    restart_policy: unless-stopped
+    state: started
+    ports: "{{ crowdsec_container_ports }}"
+    volumes: "{{ crowdsec_container_volumes }}"
+
+- name: Template bouncer config if enabled
+  when: crowdsec_bouncer_enabled
+  ansible.builtin.template:
+    src: bouncer_config.yaml.j2
+    dest: "{{ crowdsec_base_path }}/bouncer_config.yaml"
+    owner: "{{ crowdsec_user }}"
+    group: "{{ crowdsec_user }}"
+    mode: "0644"
+
+- name: Run CrowdSec Bouncer container
+  when: crowdsec_bouncer_enabled
+  community.docker.docker_container:
+    name: "{{ crowdsec_bouncer_container_name }}"
+    image: "{{ crowdsec_bouncer_image_reference }}"
+    restart_policy: unless-stopped
+    state: started
+    volumes: "{{ crowdsec_bouncer_volumes }}"
