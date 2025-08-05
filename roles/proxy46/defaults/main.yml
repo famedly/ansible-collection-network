@@ -25,7 +25,7 @@ proxy46_container_image_repository: >-
     + proxy46_container_image_namespace | default('')
     + proxy46_container_image_name
   }}
-proxy46_container_image_registry: "docker.nexus.famedly.de"
+proxy46_container_image_registry: "registry.famedly.net/docker"
 proxy46_container_image_name: "proxy46"
 proxy46_container_image_tag: "latest"
 proxy46_container_image_force_pull: "{{ proxy46_container_image_tag is defined }}"
