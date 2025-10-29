@@ -24,12 +24,3 @@
       {{ traefik_container_volumes + [cert_mapping] }}
   vars:
     cert_mapping: "{{ traefik_cert_path }}:{{ traefik_cert_path }}:ro"
-
-- name: Template script for execution in manual cert management
-  ansible.builtin.template:
-    src: post-renewal.sh.j2
-    dest: "{{ lego_post_renewal_script }}"
-    owner: "{{ traefik_user_info.uid }}"
-    group: "{{ traefik_user_info.group }}"
-    mode: "0750"
-  when: lego_post_renewal_script is defined
