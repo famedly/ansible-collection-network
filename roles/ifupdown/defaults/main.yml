@@ -2,3 +2,11 @@
 
 ifupdown_interfaces: []
 ifupdown_confd_path: "/etc/network/interfaces.d/"
+
+# Because of our complex VPN setups, ifup can fail for some of our interfaces sometimes.
+# `ifup -a` is executed by networking.service on Debian. If this fails for any of the VPN
+# interfaces, all child processes of ifup get killed, including dhclient for eth0. This
+# leads to eth0 loosing its IPv4 address after the initial lease expires, causing all
+# IPv4 tunnels to fail. Running `ifup -a` with `--ignore-errors` seems to work around this.
+# https://manpages.debian.org/trixie/ifupdown/ifup.8.en.html
+ifupdown_ignore_errors: false

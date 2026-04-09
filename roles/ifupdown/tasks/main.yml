@@ -52,3 +52,31 @@
   loop_control:
     loop_var: ifupdown_file
     label: "{{ ifupdown_file.label }} ({{ ifupdown_file.ifaces | map(attribute='name') | unique | join(',') }}"
+
+- name: Ensure networking.service directory is present
+  ansible.builtin.file:
+    path: "/etc/systemd/system/networking.service.d/"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  when: ifupdown_ignore_errors
+
+- name: Create networking.service override.conf
+  ansible.builtin.copy:
+    dest: "/etc/systemd/system/networking.service.d/override.conf"
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      [Service]
+      ExecStart=
+      ExecStart=/sbin/ifup -a --read-environment --ignore-errors
+      ExecStart=-/bin/sh -c 'if [ -f /run/network/restart-hotplug ]; then /sbin/ifup -a --read-environment --allow=hotplug; fi'
+  when: ifupdown_ignore_errors
+
+- name: Remove networking.service override.conf
+  ansible.builtin.file:
+    path: "/etc/systemd/system/networking.service.d/override.conf"
+    state: absent
+  when: not ifupdown_ignore_errors
