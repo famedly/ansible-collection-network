@@ -53,6 +53,11 @@ certificatesResolvers:
       tlsChallenge:
         {{ resolver.acme.challenge_config | to_nice_yaml }}
       {% endif %}
+      {% if resolver.acme.eab is defined %}
+      eab:
+        kid: "{{ resolver.acme.eab.kid }}"
+        hmacEncoded: "{{ resolver.acme.eab.hmac }}"
+      {% endif %}
   {% endif %}
 {% endfor %}
 {% endif %}

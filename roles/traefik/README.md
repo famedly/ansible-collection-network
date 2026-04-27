@@ -67,6 +67,17 @@ traefik_cert_resolvers:
         privkey_type: RSA4096
         contact:
           - mailto:ops@enterprise.com
+  # ACME account w/ External Account Binding (EAB)
+  - slug: eabresolver
+    acme:
+      ca_server: https://bao.enterprise-acme-provider.com/v1/pki/roles/traefik/acme/directory
+      registration_email: "ops@enterprise.com"
+      challenge_type: HTTP-01
+      challenge_config:
+        entrypoint: web
+      eab:
+        kid: xxxxxxxx-xxxx-xxxx
+        hmac: vault-eab-0-xxxxxxxxxxxx
 ```
 
 You would use those resolvers in your traefik routers like this: `routers.http.$name.tls.certresolver: $slug`.
