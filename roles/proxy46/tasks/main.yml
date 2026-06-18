@@ -23,9 +23,11 @@
       - redirect.server_name | default('') | length > 0
       - redirect.location | default('') | length > 0
       - redirect.proxy_pass | default('') | length > 0
+      - not redirect.proxy_pass.endswith('/')
     fail_msg: >-
       Each proxy46_custom_domain_redirects entry requires non-empty
-      server_name, location and proxy_pass.
+      server_name, location and proxy_pass. proxy_pass must not end with /
+      (nginx would strip the ACME challenge path).
   loop: "{{ proxy46_custom_domain_redirects }}"
   loop_control:
     loop_var: redirect

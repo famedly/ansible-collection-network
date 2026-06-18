@@ -37,8 +37,8 @@ proxy46_dns: "1.1.1.1"
 # upstream instead of the default forward to the SNI backend.
 # Each entry:
 # - server_name:
-#   location:
-#   proxy_pass:
-#   listen: # (default 80)
-#   proxy_http_version: # (optional).
+# - location:
+# - proxy_pass: # upstream base URL without trailing /; full request URI is appended
+# - listen: # (default 80)
+# - proxy_http_version: # (optional).
 proxy46_custom_domain_redirects: []
