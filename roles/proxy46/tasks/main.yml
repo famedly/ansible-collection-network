@@ -17,6 +17,21 @@
     mode: "{{ proxy46_base_path_mode }}"
   tags: ['prepare', 'prepare-proxy46']
 
+- name: Assert custom domain redirects are well-formed
+  ansible.builtin.assert:
+    that:
+      - redirect.server_name | default('') | length > 0
+      - redirect.location | default('') | length > 0
+      - redirect.proxy_pass | default('') | length > 0
+    fail_msg: >-
+      Each proxy46_custom_domain_redirects entry requires non-empty
+      server_name, location and proxy_pass.
+  loop: "{{ proxy46_custom_domain_redirects }}"
+  loop_control:
+    loop_var: redirect
+    label: "{{ redirect.server_name | default('<missing>') }}"
+  tags: ['deploy', 'deploy-proxy46']
+
 - name: Template config file
   become: true
   ansible.builtin.template:

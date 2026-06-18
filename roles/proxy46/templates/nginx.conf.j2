@@ -41,4 +41,17 @@ http {
 			proxy_buffering off;
 		}
 	}
+{% for redirect in proxy46_custom_domain_redirects %}
+	server {
+		listen {{ redirect.listen | default(80) }};
+		server_name {{ redirect.server_name }};
+
+		location {{ redirect.location }} {
+			proxy_pass {{ redirect.proxy_pass }};
+{% if redirect.proxy_http_version is defined %}
+			proxy_http_version {{ redirect.proxy_http_version }};
+{% endif %}
+		}
+	}
+{% endfor %}
 }

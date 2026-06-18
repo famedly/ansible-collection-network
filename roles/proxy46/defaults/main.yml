@@ -32,3 +32,13 @@ proxy46_container_image_force_pull: "{{ proxy46_container_image_tag is defined }
 
 proxy46_prefix: "{{ famedly_server_host_ipv6 | regex_replace('((::)1|(:)0:1)$', '\\2\\3') }}"
 proxy46_dns: "1.1.1.1"
+
+# Extra server blocks that proxy specific Host+path traffic to a custom
+# upstream instead of the default forward to the SNI backend.
+# Each entry:
+# - server_name:
+#   location:
+#   proxy_pass:
+#   listen: # (default 80)
+#   proxy_http_version: # (optional).
+proxy46_custom_domain_redirects: []
