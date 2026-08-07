@@ -6,6 +6,7 @@ traefik_base_path: /opt/traefik
 traefik_base_path_owner: "{{ traefik_user }}"
 traefik_base_path_group: "{{ traefik_user }}"
 traefik_base_path_mode: "0750"
+traefik_post_renewal_script: "{{ traefik_base_path }}/post-renewal.sh"
 
 traefik_dyn_config_path: "{{ traefik_base_path }}/config.d"
 
