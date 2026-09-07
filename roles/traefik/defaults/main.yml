@@ -1,6 +1,5 @@
 ---
-
-traefik_version: "3.7.1"
+traefik_version: "3.7.13"
 traefik_user: traefik
 traefik_base_path: /opt/traefik
 traefik_base_path_owner: "{{ traefik_user }}"
@@ -130,7 +129,6 @@ traefik_config_tls_certificates:
     {%- do cert_list.append({'certFile': cert.fullchain, 'keyFile': cert.privkey}) -%}
     {%- endfor -%}
     {{ cert_list }}
-
 
 traefik_config_tls: >-
   {{ traefik_config_tls_options
