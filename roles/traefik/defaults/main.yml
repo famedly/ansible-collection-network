@@ -1,5 +1,5 @@
 ---
-traefik_version: "3.7.13"
+traefik_version: "3.7.15"
 traefik_user: traefik
 traefik_base_path: /opt/traefik
 traefik_base_path_owner: "{{ traefik_user }}"
