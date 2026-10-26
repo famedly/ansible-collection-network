@@ -1,8 +1,0 @@
----
-- name: Template yggdrasil configuration to {{ yggdrasil_config_path }}
-  ansible.builtin.template:
-    src: yggdrasil.conf.j2
-    dest: "{{ yggdrasil_config_path }}"
-    mode: "0644"
-  notify:
-    - "restart_yggdrasil"

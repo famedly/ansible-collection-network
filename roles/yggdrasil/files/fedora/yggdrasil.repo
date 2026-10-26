@@ -1,4 +1,0 @@
-[yggdrasil]
-name = Yggdrasil
-baseurl = https://neilalexander.s3.eu-west-2.amazonaws.com/rpm/
-gpgcheck=1
