@@ -3,7 +3,6 @@
   become: true
   ansible.builtin.user:
     name: "{{ proxy46_user }}"
-    append: true
   register: proxy46_user_info
   tags: ['prepare', 'prepare-proxy46']
 

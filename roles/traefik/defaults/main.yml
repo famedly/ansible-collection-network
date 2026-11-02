@@ -69,13 +69,13 @@ traefik_metrics_rule: "Host(`{{ traefik_api_host }}`) && Path(`/metrics`)"
 traefik_metrics_enable_tls: false
 
 traefik_dynamic_extra_configs: []
-traefik_dynamic_configs_base: |
-  {%- set config = [] -%}
-  {%- do config.append("api-router") if traefik_enable_api -%}
-  {%- do config.append("metrics-router") if traefik_enable_metrics -%}
-  {%- do config.append("https-redirect") if traefik_enable_https_redirect -%}
-  {%- do config.append("tls") -%}
-  {{ config }}
+traefik_dynamic_configs_base: >-
+  {{
+    (['api-router'] if traefik_enable_api else [])
+    + (['metrics-router'] if traefik_enable_metrics else [])
+    + (['https-redirect'] if traefik_enable_https_redirect else [])
+    + ['tls']
+  }}
 
 traefik_container_image_reference: >-
   {{
@@ -124,11 +124,11 @@ traefik_config_tls_defaults: >-
 
 traefik_config_tls_certificates:
   certificates: >-
-    {%- set cert_list = [] -%}
+    {%- set ns = namespace(cert_list=[]) -%}
     {%- for cert in traefik_certs_to_load -%}
-    {%- do cert_list.append({'certFile': cert.fullchain, 'keyFile': cert.privkey}) -%}
+    {%- set ns.cert_list = ns.cert_list + [{'certFile': cert.fullchain, 'keyFile': cert.privkey}] -%}
     {%- endfor -%}
-    {{ cert_list }}
+    {{ ns.cert_list }}
 
 traefik_config_tls: >-
   {{ traefik_config_tls_options
