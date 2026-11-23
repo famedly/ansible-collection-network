@@ -10,6 +10,15 @@ traefik_cert_resolvers_supported_types:
 
 traefik_dynamic_configs: "{{ traefik_dynamic_configs_base + traefik_dynamic_extra_configs }}"
 
+traefik_plugins_complete: >-
+  {{
+    ({'traefik-oidc-auth': traefik_oidc_auth_plugin} if traefik_oidc_auth_clients else {})
+    | combine(traefik_plugins, recursive=true)
+  }}
+traefik_oidc_auth_plugin:
+  moduleName: "github.com/sevensolutions/traefik-oidc-auth"
+  version: "{{ traefik_oidc_auth_plugin_version }}"
+
 traefik_container_labels_complete: "{{ traefik_container_labels_base | combine(traefik_container_labels) }}"
 traefik_container_labels_base:
   version: "{{ traefik_version }}"

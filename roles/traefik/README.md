@@ -25,6 +25,7 @@ This requires docker to be already installed.
 | `traefik_skip_ssl_verify`            | Allow traefik to skip SSL verification            |
 | `traefik_trusted_root_cas`           | A list of CA files to trust                       |
 | `traefik_plugins`                    | A dict of plugins from the catalog to add         |
+| `traefik_oidc_auth_clients`          | A dict of OIDC login middlewares to create        |
 
 ## Usage
 
@@ -101,6 +102,23 @@ traefik_plugins:
     moduleName: "github.com/traefik/plugindemo"
     version: "v0.2.2"
 ```
+
+### OIDC login
+
+Every entry in `traefik_oidc_auth_clients` creates the middleware `oidc-<key>@file` using the [traefik-oidc-auth](https://github.com/sevensolutions/traefik-oidc-auth) plugin with PKCE. A non-empty dict also loads the plugin and requires `traefik_oidc_auth_secret` (32 characters, encrypts the session cookies). Register `https://<host>/oidc/callback` as redirect URI at the identity provider.
+
+```yaml
+traefik_oidc_auth_provider_url: "https://auth.example.org"
+traefik_oidc_auth_secret: "<32 random characters>"
+traefik_oidc_auth_clients:
+  myservice:
+    client_id: "123456789@myservice"
+    # provider_url: "https://other-idp.example.org"
+    # config:  # raw plugin options, merged on top
+    #   LogoutUri: "/oidc/logout"
+```
+
+Then add `oidc-myservice@file` to the middlewares of the service's router.
 
 ## License
 

@@ -1,10 +1,8 @@
 #jinja2: lstrip_blocks: True, trim_blocks: True
-{% if traefik_plugins is defined %}
+{% if traefik_plugins_complete | length > 0 %}
 experimental:
-  {% if traefik_plugins is defined %}
   plugins:
-    {{ traefik_plugins | to_nice_yaml(indent=2) | indent(4, False) }}
-  {% endif %}
+    {{ traefik_plugins_complete | to_nice_yaml(indent=2) | indent(4, False) }}
 {% endif %}
 
 {%- set ns = namespace(entrypoints={}) -%}

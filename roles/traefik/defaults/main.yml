@@ -74,8 +74,25 @@ traefik_dynamic_configs_base: >-
     (['api-router'] if traefik_enable_api else [])
     + (['metrics-router'] if traefik_enable_metrics else [])
     + (['https-redirect'] if traefik_enable_https_redirect else [])
+    + (['oidc-auth'] if traefik_oidc_auth_clients else [])
     + ['tls']
   }}
+
+# Extra plugins from the catalog, merged with the OIDC auth plugin below.
+traefik_plugins: {}
+
+# OIDC login per service via https://github.com/sevensolutions/traefik-oidc-auth.
+# Each key becomes the middleware "oidc-<key>@file"; a non-empty dict enables the plugin.
+traefik_oidc_auth_clients: {}
+#  atlantis:
+#    client_id: "123456789@atlantis"
+#    provider_url: "https://auth.example.org"  # optional, defaults to traefik_oidc_auth_provider_url
+#    config: {}                                # optional raw plugin options merged on top (Scopes, Authorization, LogoutUri, ...)
+traefik_oidc_auth_provider_url: ~
+traefik_oidc_auth_plugin_version: "v0.24.0"
+# 32 characters, encrypts the session cookies of all OIDC middlewares on this host.
+traefik_oidc_auth_secret: ~
+traefik_oidc_auth_secret_file: "{{ traefik_dyn_config_path }}/oidc-auth.secret"
 
 traefik_container_image_reference: >-
   {{

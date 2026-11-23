@@ -63,6 +63,34 @@
     - "restart_traefik"
   tags: ['deploy', 'deploy-traefik']
 
+- name: Check OIDC auth settings
+  ansible.builtin.assert:
+    that:
+      - traefik_oidc_auth_secret | default('', true) | length == 32
+      - traefik_oidc_auth_clients.values() | rejectattr('client_id', 'defined') | list | length == 0
+      - >-
+        traefik_oidc_auth_clients.values() | rejectattr('provider_url', 'defined') | list | length == 0
+        or traefik_oidc_auth_provider_url | default('', true) | length > 0
+    fail_msg: >-
+      traefik_oidc_auth_clients needs a 32 character traefik_oidc_auth_secret,
+      a client_id per entry, and a provider_url per entry or traefik_oidc_auth_provider_url.
+    quiet: true
+  when: traefik_oidc_auth_clients | length > 0
+  tags: ['prepare', 'deploy', 'prepare-traefik', 'deploy-traefik']
+
+- name: Write OIDC auth session secret
+  ansible.builtin.copy:
+    content: "{{ traefik_oidc_auth_secret }}"
+    dest: "{{ traefik_oidc_auth_secret_file }}"
+    owner: "{{ traefik_user_info.uid }}"
+    group: "{{ traefik_user_info.group }}"
+    mode: "0600"
+  no_log: true
+  when: traefik_oidc_auth_clients | length > 0
+  notify:
+    - "restart_traefik"
+  tags: ['deploy', 'deploy-traefik']
+
 - name: Template dynamic configurations for {{ item }}
   ansible.builtin.template:
     src: "{{ item }}.yml.j2"
@@ -82,6 +110,18 @@
   notify:
     - "restart_traefik"
   when: not traefik_enable_api
+  tags: ['deploy', 'deploy-traefik']
+
+- name: Remove OIDC auth configuration, when disabled
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ traefik_dyn_config_path }}/oidc-auth.yml"
+    - "{{ traefik_oidc_auth_secret_file }}"
+  notify:
+    - "restart_traefik"
+  when: traefik_oidc_auth_clients | length == 0
   tags: ['deploy', 'deploy-traefik']
 
 # https://github.com/quic-go/quic-go/wiki/UDP-Buffer-Sizes

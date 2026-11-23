@@ -1,0 +1,15 @@
+{%- set ns = namespace(middlewares={}) -%}
+{%- for name, client in traefik_oidc_auth_clients.items() -%}
+  {%- set plugin_config = {
+    'Secret': '${file:' ~ traefik_oidc_auth_secret_file ~ '}',
+    'Provider': {
+      'Url': client.provider_url | default(traefik_oidc_auth_provider_url),
+      'ClientId': client.client_id | string,
+      'UsePkce': true,
+    },
+  } | combine(client.config | default({}), recursive=true) -%}
+  {%- set ns.middlewares = ns.middlewares | combine({
+    'oidc-' ~ name: {'plugin': {'traefik-oidc-auth': plugin_config}}
+  }) -%}
+{%- endfor -%}
+{{ {'http': {'middlewares': ns.middlewares}} | to_nice_yaml(indent=2) }}
