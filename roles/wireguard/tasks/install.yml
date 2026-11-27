@@ -6,31 +6,31 @@
     filename: debian-backports
     state: present
     update_cache: true
-  when: ansible_distribution == "Debian" and ansible_distribution_major_version == '10'
+  when: ansible_facts.distribution == "Debian" and ansible_facts.distribution_major_version == '10'
 
 - name: Install linux headers for current kernel on Debian 10
   ansible.builtin.apt:
     name: "linux-headers-amd64"
   # assumes amd64 but doesn't need ansible_kernel, as the meta package is usually more suitable
-  when: ansible_distribution == "Debian" and ansible_distribution_major_version == '10' and ansible_architecture == "x86_64"
+  when: ansible_facts.distribution == "Debian" and ansible_facts.distribution_major_version == '10' and ansible_facts.architecture == "x86_64"
 
 - name: Install wireguard package (Debian/Ubuntu)
   ansible.builtin.apt:
     name: wireguard
     state: present
-  when: ansible_distribution == "Debian" or ansible_distribution == "Ubuntu"
+  when: ansible_facts.distribution == "Debian" or ansible_facts.distribution == "Ubuntu"
 
 - name: Install wireguard package (Fedora)
   ansible.builtin.dnf:
     name: wireguard-tools
     state: present
-  when: ansible_distribution == "Fedora"
+  when: ansible_facts.distribution == "Fedora"
 
 - name: Install wireguard package (generic)
   ansible.builtin.package:
     name: wireguard-tools
     state: present
-  when: ansible_distribution not in ['Debian', 'Ubuntu', 'Fedora']
+  when: ansible_facts.distribution not in ['Debian', 'Ubuntu', 'Fedora']
 
 - name: Ensure wireguard kernel module is loaded
   community.general.modprobe:
